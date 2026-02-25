@@ -1532,9 +1532,8 @@
 
         // ====== STATE ======
         let hist = [], mc = 0, gen = false, lastPdfUrl = null, lastPdfTitle = '';
-        // Quando estiver hospedado no GitHub Pages, altere esta variável para a URL do seu backend LocalTunnel ou Cloud API:
-        // Exemplo: const API_BASE = 'https://sua-url-aqui.loca.lt';
-        const API_BASE = 'https://wild-onions-burn.loca.lt';
+        // Sistema Auto-Healing de API: Puxa do armazenamento ou usa o Localtunnel fallback
+        let API_BASE = localStorage.getItem('BOOKBOT_API_URL') || 'https://wild-onions-burn.loca.lt';
         const S = { theme: 'Minimalista Moderno', style: 'Profissional', audience: 'Público geral', language: 'Português Brasileiro' };
         let lib = JSON.parse(localStorage.getItem('bb_lib') || '[]');
         renderLib(); updStats();
@@ -1691,7 +1690,24 @@
                 addMsg('b', '💡 **Dica:** Clique em **Preview** para folhear o PDF, ou **Baixar** para salvar. Quer criar outro? É só pedir!');
             } catch (err) {
                 console.error(err);
-                addMsg('b', `❌ Erro de sistema: ${err.message}`);
+
+                // Sistema de Auto-Recuperação (Self-Healing)
+                if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+                    addMsg('b', `🚨 **Conexão perdida com o Servidor!** O Localtunnel que estava rodando no computador original expirou ou caiu.`);
+                    let userUrl = prompt("🔴 CONEXÃO CAIU 🔴\n\nSe você acabou de fazer o Deploy no Render.com, cole abaixo o link HTTPS da sua API definitiva para resolver isso para sempre:\n(Exemplo: https://sua-api-xxx.onrender.com)");
+
+                    if (userUrl && userUrl.startsWith('http')) {
+                        // Limpa barras a direita
+                        if (userUrl.endsWith('/')) userUrl = userUrl.slice(0, -1);
+                        localStorage.setItem('BOOKBOT_API_URL', userUrl.trim());
+                        API_BASE = userUrl.trim();
+                        addMsg('b', `✅ **Novo Servidor Linkado!** Salvamos \`${API_BASE}\` na memória.\nPor favor, clique em Enviar novamente para tentar gerar!`);
+                    } else {
+                        addMsg('b', `❌ Nenhuma URL válida foi inserida. Aguardando servidor voltar...`);
+                    }
+                } else {
+                    addMsg('b', `❌ Erro de sistema: ${err.message}`);
+                }
                 sndBtn.disabled = false;
             }
         }
