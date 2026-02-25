@@ -8,6 +8,9 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libopenjp2-7-dev \
     libffi-dev \
+    libharfbuzz-dev \
+    fonts-liberation \
+    fonts-dejavu \
     && rm -rf /var/lib/apt/lists/*
 
 # Definir diretório de trabalho
