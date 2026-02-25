@@ -51,7 +51,10 @@
             font-family: 'Inter', system-ui, sans-serif;
             background: var(--bg);
             color: var(--t);
-            min-height: 100vh;
+            height: 100vh;
+            height: 100dvh;
+            /* Mobile viewport fix */
+            max-height: 100vh;
             overflow: hidden;
             display: flex
         }
@@ -553,7 +556,10 @@
             flex-direction: column;
             position: relative;
             z-index: 1;
-            min-width: 0
+            min-width: 0;
+            min-height: 0;
+            /* Flexbox scroll fix */
+            max-height: 100vh;
         }
 
         /* Topbar */
