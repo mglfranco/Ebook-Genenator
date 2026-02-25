@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+weasyprint
+markdown
+jinja2
+python-multipart
+Pillow
+language-tool-python
+google-generativeai
+google-genai
+python-dotenv

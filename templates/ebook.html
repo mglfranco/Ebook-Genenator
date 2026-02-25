@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }} — {{ author }}</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ========== CAPA ========== -->
+    <section class="cover">
+        <div class="cover__inner">
+            <span class="cover__badge">{{ theme }}</span>
+            <div class="cover__divider"></div>
+            <h1 class="cover__title">{{ title }}</h1>
+            <p class="cover__subtitle">Uma obra gerada com inteligência artificial e design premium</p>
+            <p class="cover__author">{{ author }}</p>
+            <p class="cover__year">{{ year }}</p>
+        </div>
+    </section>
+
+    <!-- ========== SUMÁRIO ========== -->
+    <nav class="toc">
+        <p class="toc__label">Navegação</p>
+        <h2 class="toc__heading">Sumário</h2>
+        <p class="toc__desc">{{ chapters|length }} capítulos cuidadosamente elaborados</p>
+        <div class="toc__line"></div>
+        <ol class="toc__list">
+            {% for chapter in chapters %}
+            <li class="toc__item">
+                <a href="#cap-{{ loop.index }}" style="display:flex; text-decoration:none; color:inherit; width:100%">
+                    <span class="toc__num">{{ "%02d"|format(loop.index) }}</span>
+                    <span class="toc__chapter-title">{{ chapter.title }}</span>
+                </a>
+            </li>
+            {% endfor %}
+        </ol>
+    </nav>
+
+    <!-- ========== CAPÍTULOS ========== -->
+    {% for chapter in chapters %}
+    <article class="chapter" id="cap-{{ loop.index }}">
+
+        {% if chapter.image_path %}
+        <div class="chapter__hero">
+            <img src="{{ chapter.image_path }}" alt="{{ chapter.title }}">
+            <div class="chapter__hero-fade"></div>
+        </div>
+        {% endif %}
+
+        <header class="chapter__header">
+            <span class="chapter__label">Capítulo {{ "%02d"|format(loop.index) }}</span>
+            <h2 class="chapter__title">{{ chapter.title }}</h2>
+            <div class="chapter__accent"></div>
+        </header>
+
+        <div class="chapter__body">
+            {{ chapter.html_content | safe }}
+        </div>
+
+        {% if not loop.last %}
+        <div class="divider">✦ ✦ ✦</div>
+        {% endif %}
+
+    </article>
+    {% endfor %}
+
+    <!-- ========== CONTRACAPA ========== -->
+    <section class="backcover">
+        <div class="backcover__card">
+            <span class="backcover__icon">📚</span>
+            <p class="backcover__title">{{ title }}</p>
+            <p class="backcover__author">por {{ author }}</p>
+            <div class="backcover__divider"></div>
+            <p class="backcover__text">
+                Obra gerada por Franco com tecnologia de ponta.<br>
+                Design inspirado em VOCÊ
+            </p>
+        </div>
+    </section>
+
+</body>
+
+</html>

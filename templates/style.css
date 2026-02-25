@@ -1,0 +1,627 @@
+/* =============================================================
+   E-book Generator V2 — Gamma.app Inspired Design
+   =============================================================
+   Estética premium: cards com sombras, gradientes suaves,
+   tipografia refinada, espaçamento generoso, visual de
+   apresentação profissional tipo Gamma.app.
+   ============================================================= */
+
+/* ---------- Design Tokens ---------- */
+:root {
+    --color-bg: #ffffff;
+    --color-bg-warm: #faf9f7;
+    --color-bg-cool: #f4f3ff;
+    --color-bg-dark: #0c0a1d;
+    --color-bg-dark-mid: #16132d;
+
+    --color-text: #1a1a2e;
+    --color-text-secondary: #555570;
+    --color-text-light: #8b8ba0;
+    --color-text-white: #f5f5fa;
+
+    --color-accent: #6c5ce7;
+    --color-accent-light: #a29bfe;
+    --color-accent-soft: rgba(108, 92, 231, 0.08);
+    --color-accent-border: rgba(108, 92, 231, 0.18);
+
+    --font-sans: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+    --font-serif: Georgia, 'Palatino Linotype', 'Book Antiqua', serif;
+    --font-mono: 'Cascadia Code', 'Consolas', monospace;
+
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+    --shadow-card: 0 2px 20px rgba(108, 92, 231, 0.07);
+}
+
+/* ---------- Page Rules ---------- */
+@page {
+    size: A4;
+    margin: 2.5cm 2.8cm 3cm 2.8cm;
+
+    @bottom-center {
+        content: counter(page);
+        font-family: var(--font-sans);
+        font-size: 9pt;
+        font-weight: 500;
+        color: var(--color-accent);
+        letter-spacing: 0.05em;
+    }
+}
+
+@page :first {
+    margin: 0;
+
+    @bottom-center {
+        content: none;
+    }
+}
+
+@page :nth(2) {
+    @bottom-center {
+        content: none;
+    }
+}
+
+/* ---------- Base ---------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 11pt;
+}
+
+body {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    line-height: 1.75;
+    color: var(--color-text);
+    background: var(--color-bg);
+}
+
+/* =========================================================
+   CAPA — Full-bleed dark gradient with centered card
+   ========================================================= */
+.cover {
+    page-break-after: always;
+    min-height: 100vh;
+    background: linear-gradient(160deg, #0c0a1d 0%, #1a1640 35%, #2d1f6e 65%, #6c5ce7 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 4cm 3cm;
+    color: var(--color-text-white);
+    position: relative;
+}
+
+/* Decorative circles on cover */
+.cover::before {
+    content: '';
+    position: absolute;
+    width: 18cm;
+    height: 18cm;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(108, 92, 231, 0.12) 0%, transparent 70%);
+    top: -4cm;
+    right: -6cm;
+}
+
+.cover::after {
+    content: '';
+    position: absolute;
+    width: 12cm;
+    height: 12cm;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(162, 155, 254, 0.1) 0%, transparent 70%);
+    bottom: -2cm;
+    left: -3cm;
+}
+
+.cover__inner {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-xl);
+    padding: 3cm 2.5cm;
+    max-width: 14cm;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.cover__badge {
+    display: inline-block;
+    font-size: 7.5pt;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-accent-light);
+    background: rgba(162, 155, 254, 0.12);
+    border: 1px solid rgba(162, 155, 254, 0.2);
+    border-radius: 30px;
+    padding: 0.15cm 0.8cm;
+    margin-bottom: 1.2cm;
+}
+
+.cover__divider {
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent-light), var(--color-accent));
+    margin: 0 auto 1.2cm;
+    border-radius: 3px;
+}
+
+.cover__title {
+    font-family: var(--font-serif);
+    font-size: 32pt;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.5cm;
+    color: #ffffff;
+}
+
+.cover__subtitle {
+    font-size: 10.5pt;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.55);
+    margin-bottom: 1.5cm;
+    line-height: 1.6;
+}
+
+.cover__author {
+    font-size: 11.5pt;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+    letter-spacing: 0.08em;
+}
+
+.cover__year {
+    font-size: 8.5pt;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.35);
+    margin-top: 0.4cm;
+}
+
+/* =========================================================
+   SUMÁRIO — Clean card list
+   ========================================================= */
+.toc {
+    page-break-after: always;
+    padding-top: 2cm;
+}
+
+.toc__label {
+    font-size: 8pt;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--color-accent);
+    margin-bottom: 0.4cm;
+}
+
+.toc__heading {
+    font-family: var(--font-serif);
+    font-size: 26pt;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 0.4cm;
+    letter-spacing: -0.02em;
+}
+
+.toc__desc {
+    font-size: 10pt;
+    color: var(--color-text-secondary);
+    margin-bottom: 1.5cm;
+    line-height: 1.6;
+}
+
+.toc__line {
+    width: 40px;
+    height: 3px;
+    background: var(--color-accent);
+    border-radius: 3px;
+    margin-bottom: 1.5cm;
+}
+
+.toc__list {
+    list-style: none;
+    padding: 0;
+}
+
+.toc__item {
+    display: flex;
+    align-items: center;
+    padding: 0.5cm 0.7cm;
+    margin-bottom: 0.25cm;
+    background: var(--color-bg-warm);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.toc__num {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 13pt;
+    color: var(--color-accent);
+    min-width: 1.8cm;
+}
+
+.toc__chapter-title {
+    font-weight: 500;
+    font-size: 11pt;
+    color: var(--color-text);
+    flex: 1;
+}
+
+/* =========================================================
+   CAPÍTULOS
+   ========================================================= */
+.chapter {
+    page-break-before: always;
+}
+
+/* ---- Hero Image ---- */
+.chapter__hero {
+    margin: -2.5cm -2.8cm 0 -2.8cm;
+    height: 10cm;
+    position: relative;
+    overflow: hidden;
+}
+
+.chapter__hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.chapter__hero-fade {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 7cm;
+    background: linear-gradient(to top,
+            #ffffff 0%,
+            rgba(255, 255, 255, 0.95) 25%,
+            rgba(255, 255, 255, 0.6) 55%,
+            transparent 100%);
+}
+
+/* ---- Chapter Header Card ---- */
+.chapter__header {
+    position: relative;
+    margin-top: -2cm;
+    margin-bottom: 1.2cm;
+    padding: 0.8cm 1cm;
+    background: var(--color-bg);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-lg);
+    z-index: 2;
+}
+
+.chapter__label {
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--color-accent);
+    margin-bottom: 0.25cm;
+    display: block;
+}
+
+.chapter__title {
+    font-family: var(--font-serif);
+    font-size: 24pt;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.3cm;
+}
+
+.chapter__accent {
+    width: 35px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-accent-light));
+    border-radius: 3px;
+}
+
+/* ---- Chapter Body ---- */
+.chapter__body {
+    text-align: justify;
+    hyphens: auto;
+    orphans: 3;
+    widows: 3;
+}
+
+/* Drop Cap */
+.chapter__body>p:first-of-type::first-letter {
+    font-family: var(--font-serif);
+    font-size: 3.4em;
+    line-height: 0.85;
+    padding-right: 0.05em;
+    color: var(--color-accent);
+    font-weight: 700;
+}
+
+/* Paragraphs */
+.chapter__body p {
+    margin-bottom: 0.5cm;
+    font-size: 10.5pt;
+    line-height: 1.85;
+    color: var(--color-text);
+}
+
+/* ---- Headings ---- */
+.chapter__body h1 {
+    font-family: var(--font-serif);
+    font-size: 20pt;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 1.4cm 0 0.5cm;
+    page-break-after: avoid;
+}
+
+.chapter__body h2 {
+    font-family: var(--font-serif);
+    font-size: 15pt;
+    font-weight: 700;
+    color: var(--color-accent);
+    margin: 1.2cm 0 0.4cm;
+    padding-bottom: 0.2cm;
+    border-bottom: 2px solid var(--color-accent-soft);
+    page-break-after: avoid;
+}
+
+.chapter__body h3 {
+    font-family: var(--font-sans);
+    font-size: 12pt;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 1cm 0 0.3cm;
+    page-break-after: avoid;
+}
+
+.chapter__body h4 {
+    font-family: var(--font-sans);
+    font-size: 10.5pt;
+    font-weight: 600;
+    font-style: italic;
+    color: var(--color-text-secondary);
+    margin: 0.8cm 0 0.25cm;
+}
+
+/* ---- Lists ---- */
+.chapter__body ul,
+.chapter__body ol {
+    margin: 0.3cm 0 0.6cm 0.5cm;
+    padding-left: 0.6cm;
+}
+
+.chapter__body li {
+    margin-bottom: 0.15cm;
+    line-height: 1.75;
+    font-size: 10.5pt;
+}
+
+.chapter__body li::marker {
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+/* ---- Blockquotes (Gamma-style card) ---- */
+.chapter__body blockquote {
+    margin: 0.8cm 0;
+    padding: 0.65cm 0.9cm;
+    background: linear-gradient(135deg, var(--color-bg-cool), var(--color-bg-warm));
+    border: 1px solid var(--color-accent-border);
+    border-left: 4px solid var(--color-accent);
+    border-radius: var(--radius-md);
+    font-style: italic;
+    font-size: 10.5pt;
+    line-height: 1.75;
+    color: var(--color-text-secondary);
+    page-break-inside: avoid;
+    box-shadow: var(--shadow-card);
+    position: relative;
+}
+
+.chapter__body blockquote::before {
+    content: "\201C";
+    font-family: var(--font-serif);
+    font-size: 42pt;
+    color: rgba(108, 92, 231, 0.12);
+    position: absolute;
+    top: -0.15cm;
+    left: 0.2cm;
+    line-height: 1;
+}
+
+.chapter__body blockquote p {
+    margin-bottom: 0.15cm;
+    position: relative;
+}
+
+/* ---- Code ---- */
+.chapter__body code {
+    font-family: var(--font-mono);
+    background: var(--color-accent-soft);
+    padding: 0.04cm 0.14cm;
+    border-radius: var(--radius-sm);
+    font-size: 9pt;
+    color: var(--color-accent);
+    border: 1px solid var(--color-accent-border);
+}
+
+.chapter__body pre {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 0.6cm 0.8cm;
+    border-radius: var(--radius-md);
+    margin: 0.5cm 0;
+    font-size: 9pt;
+    line-height: 1.55;
+    page-break-inside: avoid;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: var(--shadow-lg);
+    overflow-x: auto;
+}
+
+.chapter__body pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    border: none;
+    font-size: inherit;
+}
+
+/* ---- Tables (Gamma card style) ---- */
+.chapter__body table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 0.6cm 0;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-md);
+    page-break-inside: avoid;
+}
+
+.chapter__body th {
+    background: var(--color-accent-soft);
+    font-weight: 600;
+    font-size: 9.5pt;
+    color: var(--color-accent);
+    padding: 0.3cm 0.5cm;
+    text-align: left;
+    letter-spacing: 0.02em;
+    border-bottom: 2px solid var(--color-accent-border);
+}
+
+.chapter__body td {
+    padding: 0.3cm 0.5cm;
+    font-size: 10pt;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    color: var(--color-text);
+}
+
+.chapter__body tr:last-child td {
+    border-bottom: none;
+}
+
+/* ---- Horizontal Rule ---- */
+.chapter__body hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.08) 20%, rgba(0, 0, 0, 0.08) 80%, transparent 100%);
+    margin: 1.2cm 0;
+}
+
+/* ---- Strong / Em / Links ---- */
+.chapter__body strong {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.chapter__body em {
+    font-style: italic;
+}
+
+.chapter__body a {
+    color: var(--color-accent);
+    text-decoration: none;
+}
+
+/* =========================================================
+   SECTION DIVIDER
+   ========================================================= */
+.divider {
+    text-align: center;
+    margin: 1.2cm 0;
+    color: var(--color-accent-light);
+    font-size: 11pt;
+    letter-spacing: 0.6em;
+}
+
+/* =========================================================
+   CONTRACAPA
+   ========================================================= */
+.backcover {
+    page-break-before: always;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    text-align: center;
+    padding: 4cm;
+}
+
+.backcover__card {
+    background: linear-gradient(135deg, var(--color-bg-cool), var(--color-bg-warm));
+    border: 1px solid var(--color-accent-border);
+    border-radius: var(--radius-xl);
+    padding: 2cm 2.5cm;
+    box-shadow: var(--shadow-lg);
+    max-width: 12cm;
+}
+
+.backcover__icon {
+    font-size: 28pt;
+    margin-bottom: 0.8cm;
+    display: block;
+}
+
+.backcover__title {
+    font-family: var(--font-serif);
+    font-size: 16pt;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 0.3cm;
+}
+
+.backcover__author {
+    font-size: 10pt;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.8cm;
+}
+
+.backcover__divider {
+    width: 40px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-accent-light));
+    margin: 0 auto 0.8cm;
+    border-radius: 3px;
+}
+
+.backcover__text {
+    font-size: 10pt;
+    font-style: italic;
+    color: var(--color-text-light);
+    line-height: 1.7;
+}
+
+/* =========================================================
+   PRINT COLOR ADJUST
+   ========================================================= */
+@media print {
+    body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
