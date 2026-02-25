@@ -4,9 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BookBot — Gerador de E-books com IA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <title>BookBot V7 - Crie E-Books com IA</title>
+
+    <!-- PWA Config -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -1684,11 +1689,21 @@
     </div>`;
                 addMsg('b', '🎉 Seu e-book foi gerado com sucesso!', dl);
                 addMsg('b', '💡 **Dica:** Clique em **Preview** para folhear o PDF, ou **Baixar** para salvar. Quer criar outro? É só pedir!');
-            } catch (e) { clearInterval(pi); addMsg('b', `❌ Erro: ${e.message}`) }
-            gen = false; sndBtn.disabled = false; inp.focus()
+            } catch (err) {
+                console.error(err);
+                addMsg('b', `❌ Erro de sistema: ${err.message}`);
+                sndBtn.disabled = false;
+            }
         }
 
-        inp.focus();
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('ServiceWorker registered:', reg.scope))
+                    .catch(e => console.error('ServiceWorker error:', e));
+            });
+        }
     </script>
 </body>
 
