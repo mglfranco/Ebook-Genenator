@@ -14,10 +14,7 @@ import google.generativeai as genai
 # Prioriza modelos com quotas separadas do gemini-2.0-flash
 _MODELS = [
     "gemini-2.5-flash-lite",
-    "gemini-2.0-flash-lite",
     "gemini-2.5-flash",
-    "gemini-2.0-flash",
-    "gemma-3-27b-it",
 ]
 
 _configured = False
@@ -34,9 +31,9 @@ def _configure():
     _configured = True
 
 
-def _gerar_com_retry(prompt: str, max_retries: int = 4) -> str:
+def _gerar_com_retry(prompt: str, max_retries: int = 2) -> str:
     """
-    Tenta gerar conteúdo com fallback entre modelos e retry automático.
+    Tenta gerar conteúdo com fallback entre os 2 melhores modelos. Rate-limit wait reduzido drasticamente.
     """
     _configure()
 
@@ -60,7 +57,7 @@ def _gerar_com_retry(prompt: str, max_retries: int = 4) -> str:
                 error_str = str(e)
 
                 if "429" in error_str or "quota" in error_str.lower():
-                    wait = min(30 * (attempt + 1), 90)
+                    wait = 15
                     print(f"[Gemini] Rate limit em {model_name}, aguardando {wait}s (tentativa {attempt+1})...")
                     time.sleep(wait)
                     continue
@@ -133,6 +130,7 @@ def gerar_todos_capitulos(
         # Intervalo entre capítulos para evitar rate limit
         if i > 0:
             print(f"[Gemini] Aguardando 5s antes do capítulo {i+1}...")
+            import time
             time.sleep(5)
 
         print(f"[Gemini] Gerando capítulo {i+1}/{total}: {ch['title']}")
@@ -144,20 +142,11 @@ def gerar_todos_capitulos(
             paginas=ch.get("pages", 5),
             tema=tema,
         )
-        
-        # Correção de texto
-        content_md = corrigir_texto(content_md)
-
-        # Converter Markdown para HTML
-        content_html = markdown.markdown(content_md)
-        
-        # Injetar QR Codes se houver links externos 
-        content_html = inject_qr_codes(content_html, "output", i)
 
         resultado.append({
             "title": ch["title"],
+            "content": content_md,
             "content_md": content_md,
-            "content_html": content_html,
         })
         print(f"[Gemini] ✓ Capítulo {i + 1} gerado ({len(content_md)} chars)")
 

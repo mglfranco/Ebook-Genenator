@@ -74,7 +74,7 @@ def render_ebook_html(
     return html_str
 
 
-def compile_pdf(html_content: str, output_path: str) -> str:
+def compile_pdf(html_content: str, output_path: str, additional_css: str = None) -> str:
     """Compila HTML + CSS em PDF via WeasyPrint."""
     css_path = _TEMPLATES_DIR / "style.css"
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
@@ -83,11 +83,14 @@ def compile_pdf(html_content: str, output_path: str) -> str:
         string=html_content,
         base_url=str(_TEMPLATES_DIR),
     )
-    css_stylesheet = CSS(filename=str(css_path))
+    stylesheets = [CSS(filename=str(css_path))]
+    
+    if additional_css:
+        stylesheets.append(CSS(string=additional_css))
 
     html_doc.write_pdf(
         output_path,
-        stylesheets=[css_stylesheet],
+        stylesheets=stylesheets,
     )
     return os.path.abspath(output_path)
 
@@ -97,9 +100,30 @@ def generate_pdf(
     author: str,
     theme: str,
     chapters: list[dict],
-    image_paths: list[str],
+    image_paths: dict[int, str],
     output_path: str,
+    bleed_mm: int = 3
 ) -> str:
-    """Pipeline completo: renderizar HTML → compilar PDF."""
+    """Compila HTML final e renderiza PDF via Weasyprint com sangria (bleed)."""
     html_content = render_ebook_html(title, author, theme, chapters, image_paths)
-    return compile_pdf(html_content, output_path)
+
+    # Injetamos CSS adicional base para PDF + Sangria KDP
+    style = f"""
+    @page {{
+        size: A5;
+        margin: {bleed_mm}mm;
+        bleed: {bleed_mm}mm;
+    }}
+    body {{
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+    }}
+    .chapter-img {{
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+        margin-bottom: 20px;
+        border-radius: 8px;
+    }}
+    """
+    return compile_pdf(html_content, output_path, style)

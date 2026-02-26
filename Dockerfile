@@ -28,9 +28,12 @@ COPY templates/ templates/
 # O app do FastAPI vai servir a pasta web/static inteira
 COPY static/ static/
 
-# Variável de porta e host pro Uvicorn
+# Copiar pacote App Streamlit
+COPY app.py .
+
+# Variável de porta e host pro Streamlit
 ENV PORT=10000
 EXPOSE 10000
 
-# Comando para rodar a aplicação via Uvicorn na porta 10000 (Padrão do Render)
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "10000"]
+# Comando para rodar a aplicação via Streamlit na porta 10000 (Padrão do Render)
+CMD ["streamlit", "run", "app.py", "--server.port", "10000", "--server.address", "0.0.0.0"]

@@ -72,7 +72,14 @@ Seu papel é conversar com o usuário para entender exatamente que e-book ele qu
 
 
 
-def processar_mensagem(historico: list[dict], mensagem_usuario: str) -> dict:
+def processar_mensagem(
+    historico: list[dict], 
+    mensagem_usuario: str,
+    theme: str = "Minimalista Moderno",
+    style: str = "Profissional",
+    audience: str = "Geral",
+    language: str = "PT-BR"
+) -> dict:
     """
     Processa uma mensagem do usuário via chat.
 
@@ -93,9 +100,17 @@ def processar_mensagem(historico: list[dict], mensagem_usuario: str) -> dict:
     last_error = None
     for model_name in _MODELS:
         try:
+            custom_instruction = SYSTEM_PROMPT + f"""
+            
+[CONFIGURAÇÕES DO USUÁRIO]
+Idioma: {language}
+Público-Alvo: {audience}
+Estilo da Escrita: {style}
+Tema Visual do Livro (Importante para as Capas): {theme}
+"""
             model = genai.GenerativeModel(
                 model_name,
-                system_instruction=SYSTEM_PROMPT,
+                system_instruction=custom_instruction,
             )
             chat = model.start_chat(history=gemini_history)
             response = chat.send_message(mensagem_usuario)

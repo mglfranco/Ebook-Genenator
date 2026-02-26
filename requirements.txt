@@ -10,8 +10,8 @@ google-generativeai
 google-genai
 python-dotenv
 EbookLib
-
-
 qrcode
-
-
+streamlit
+edge-tts
+wikipedia-api
+bs4
