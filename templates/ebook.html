@@ -41,29 +41,38 @@
 
     <!-- ========== CAPÍTULOS ========== -->
     {% for chapter in chapters %}
-    <article class="chapter" id="cap-{{ loop.index }}">
 
-        {% if chapter.image_path %}
-        <div class="chapter__hero">
-            <img src="{{ chapter.image_path }}" alt="{{ chapter.title }}">
-            <div class="chapter__hero-fade"></div>
-        </div>
+    {% if colorful_mode and chapter.image_path %}
+    <article class="chapter colorful-mode" id="cap-{{ loop.index }}"
+        style="background-image: url('{{ chapter.image_path }}');">
+        <div class="glass-container">
+            {% else %}
+            <article class="chapter" id="cap-{{ loop.index }}">
+                {% if chapter.image_path %}
+                <div class="chapter__hero">
+                    <img src="{{ chapter.image_path }}" alt="{{ chapter.title }}">
+                    <div class="chapter__hero-fade"></div>
+                </div>
+                {% endif %}
+                {% endif %}
+
+                <header class="chapter__header">
+                    <span class="chapter__label">Capítulo {{ "%02d"|format(loop.index) }}</span>
+                    <h2 class="chapter__title">{{ chapter.title }}</h2>
+                    <div class="chapter__accent"></div>
+                </header>
+
+                <div class="chapter__body">
+                    {{ chapter.html_content | safe }}
+                </div>
+
+                {% if not loop.last %}
+                <div class="divider">✦ ✦ ✦</div>
+                {% endif %}
+
+                {% if colorful_mode and chapter.image_path %}
+        </div> <!-- Fecha glass-container -->
         {% endif %}
-
-        <header class="chapter__header">
-            <span class="chapter__label">Capítulo {{ "%02d"|format(loop.index) }}</span>
-            <h2 class="chapter__title">{{ chapter.title }}</h2>
-            <div class="chapter__accent"></div>
-        </header>
-
-        <div class="chapter__body">
-            {{ chapter.html_content | safe }}
-        </div>
-
-        {% if not loop.last %}
-        <div class="divider">✦ ✦ ✦</div>
-        {% endif %}
-
     </article>
     {% endfor %}
 

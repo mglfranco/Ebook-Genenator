@@ -60,7 +60,7 @@ def _get_palette(theme: str) -> dict:
 # ---------------------------------------------------------------
 # Tentativa 1: Gemini Image Generation (google-genai SDK)
 # ---------------------------------------------------------------
-def _try_gemini_image(prompt: str, output_path: str) -> bool:
+def _try_gemini_image(prompt: str, output_path: str, colorful_mode: bool = False) -> bool:
     """Tenta gerar imagem via Gemini. Retorna True se sucesso."""
     try:
         from google import genai
@@ -89,8 +89,13 @@ def _try_gemini_image(prompt: str, output_path: str) -> bool:
                         img_data = base64.b64decode(img_data)
 
                     img = Image.open(BytesIO(img_data))
-                    # Resize to standard ebook page width
-                    img = img.resize((800, 450), Image.LANCZOS)
+                    
+                    # Resize based on colorful mode (Vertical vs Horizontal)
+                    if colorful_mode:
+                        img = img.resize((800, 1200), Image.LANCZOS)
+                    else:
+                        img = img.resize((800, 450), Image.LANCZOS)
+                        
                     img.save(output_path, quality=92)
                     print(f"[IMG] ✓ Gemini gerou imagem: {output_path}")
                     return True
@@ -110,10 +115,11 @@ def _create_pillow_image(
     chapter_index: int,
     theme: str,
     output_path: str,
+    colorful_mode: bool = False,
 ) -> str:
     """Cria arte geométrica profissional com Pillow."""
     palette = _get_palette(theme)
-    W, H = 800, 450
+    W, H = (800, 1200) if colorful_mode else (800, 450)
     seed = int(hashlib.md5(chapter_title.encode()).hexdigest()[:8], 16)
     rng = random.Random(seed)
 
@@ -227,6 +233,7 @@ def generate_all_images(
     chapters: list[dict],
     theme: str,
     assets_dir: str,
+    colorful_mode: bool = False
 ) -> list[str]:
     """Gera imagens para cada capítulo (Gemini → Pillow fallback)."""
     Path(assets_dir).mkdir(parents=True, exist_ok=True)
@@ -237,20 +244,28 @@ def generate_all_images(
         output_path = str(Path(assets_dir) / filename)
 
         # Prompt para Gemini (ilustração profissional)
-        ai_prompt = (
-            f"Create a professional, elegant illustration for a book chapter titled "
-            f"'{chapter['title']}'. Style: {theme}. The image should be atmospheric, "
-            f"clean, and suitable for a premium e-book. No text in the image. "
-            f"Wide format (16:9), high quality, editorial illustration style."
-        )
+        if colorful_mode:
+            ai_prompt = (
+                f"Vertical portrait wallpaper 9:16 aspect ratio. Create a professional, immersive full-page illustration for a book chapter titled "
+                f"'{chapter['title']}'. Style: {theme}. The image should be an edge-to-edge wallpaper, "
+                f"clean, and suitable to be used as a premium e-book background. No text in the image."
+            )
+        else:
+            ai_prompt = (
+                f"Create a professional, elegant illustration for a book chapter titled "
+                f"'{chapter['title']}'. Style: {theme}. The image should be atmospheric, "
+                f"clean, and suitable for a premium e-book. No text in the image. "
+                f"Wide format (16:9), high quality, editorial illustration style."
+            )
 
         # Tentar Gemini primeiro, depois Pillow
-        if not _try_gemini_image(ai_prompt, output_path):
+        if not _try_gemini_image(ai_prompt, output_path, colorful_mode):
             _create_pillow_image(
                 chapter_title=chapter["title"],
                 chapter_index=i,
                 theme=theme,
                 output_path=output_path,
+                colorful_mode=colorful_mode
             )
 
         paths.append(output_path)

@@ -37,6 +37,7 @@ def render_ebook_html(
     theme: str,
     chapters: list[dict],
     image_paths: list[str],
+    colorful_mode: bool = False,
 ) -> str:
     """Renderiza o HTML completo do e-book a partir do template Jinja2."""
     env = Environment(
@@ -70,6 +71,7 @@ def render_ebook_html(
         theme=theme,
         year=datetime.now().year,
         chapters=rendered_chapters,
+        colorful_mode=colorful_mode,
     )
     return html_str
 
@@ -102,16 +104,26 @@ def generate_pdf(
     chapters: list[dict],
     image_paths: dict[int, str],
     output_path: str,
-    bleed_mm: int = 3
+    bleed_mm: int = 3,
+    colorful_mode: bool = False
 ) -> str:
     """Compila HTML final e renderiza PDF via Weasyprint com sangria (bleed)."""
-    html_content = render_ebook_html(title, author, theme, chapters, image_paths)
+    # Transform dict to list
+    ordered_paths = []
+    for i in range(len(chapters)):
+        ordered_paths.append(image_paths.get(i, ""))
+
+    html_content = render_ebook_html(title, author, theme, chapters, ordered_paths, colorful_mode)
 
     # Injetamos CSS adicional base para PDF + Sangria KDP
     style = f"""
     @page {{
         size: A5;
         margin: {bleed_mm}mm;
+        bleed: {bleed_mm}mm;
+    }}
+    @page colorful_page {{
+        margin: 0;
         bleed: {bleed_mm}mm;
     }}
     body {{
@@ -124,6 +136,21 @@ def generate_pdf(
         object-fit: cover;
         margin-bottom: 20px;
         border-radius: 8px;
+    }}
+    .colorful-mode {{
+        page: colorful_page;
+        min-height: 100vh;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        padding: 15mm;
+        box-sizing: border-box;
+    }}
+    .colorful-mode .glass-container {{
+        background-color: rgba(255, 255, 255, 0.90);
+        padding: 30px;
+        border-radius: 12px;
+        min-height: 85vh;
     }}
     """
     return compile_pdf(html_content, output_path, style)

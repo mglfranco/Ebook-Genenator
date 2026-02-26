@@ -92,6 +92,8 @@ def main():
         with col2:
             arte_fundo = st.selectbox("Estilo de Ilustrações", ["Cinematográfico", "Pintura a Óleo", "Anime / Mangá", "Vetor Flat", "3D Render", "Fotorealista", "Esboço a Lápis", "Dark Fantasy"])
 
+        modo_colorido = st.toggle("🎨 Modo E-book Colorido (Premium)", value=False, help="Substitui o fundo branco por ilustrações dinâmicas de IA cobrindo toda a página.")
+
         st.header("✍️ Direção de Texto")
         col3, col4 = st.columns(2)
         with col3:
@@ -263,7 +265,8 @@ def main():
                     image_paths = generate_all_images(
                         chapters=chapters_data,
                         theme=tema_completo,
-                        assets_dir=job_assets_dir
+                        assets_dir=job_assets_dir,
+                        colorful_mode=modo_colorido
                     )
                     
                     st.write("🖨️ **Passo 5/5**: Compilando o layout gráfico no Weasyprint e EbookLib...")
@@ -274,7 +277,8 @@ def main():
                         chapters=chapters_data,
                         image_paths=image_paths,
                         output_path=output_pdf_path,
-                        bleed_mm=int(sangria)
+                        bleed_mm=int(sangria),
+                        colorful_mode=modo_colorido
                     )
                     output_epub_path = str(_OUTPUT_DIR / f"ebook_{job_id}.epub")
                     epub_path = create_epub(
