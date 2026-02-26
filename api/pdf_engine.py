@@ -102,18 +102,20 @@ def generate_pdf(
     author: str,
     theme: str,
     chapters: list[dict],
-    image_paths: dict[int, str],
+    image_paths: list[str] | dict[int, str],
     output_path: str,
     bleed_mm: int = 3,
     colorful_mode: bool = False
 ) -> str:
     """Compila HTML final e renderiza PDF via Weasyprint com sangria (bleed)."""
-    # Transform dict to list
-    ordered_paths = []
-    for i in range(len(chapters)):
-        ordered_paths.append(image_paths.get(i, ""))
+    # Transform dict to list if legacy code sends a dict
+    if isinstance(image_paths, dict):
+        ordered_paths = []
+        for i in range(len(chapters)):
+            ordered_paths.append(image_paths.get(i, ""))
+        image_paths = ordered_paths
 
-    html_content = render_ebook_html(title, author, theme, chapters, ordered_paths, colorful_mode)
+    html_content = render_ebook_html(title, author, theme, chapters, image_paths, colorful_mode)
 
     # Injetamos CSS adicional base para PDF + Sangria KDP
     style = f"""
