@@ -22,9 +22,20 @@ from api.image_generator import generate_all_images
 from api.pdf_engine import generate_pdf
 from api.epub_engine import create_epub, inject_qr_codes
 
+# Supabase imports
+from supabase import create_client, Client
+
 # Configuração de Ambiente
 _PROJECT_ROOT = Path(__file__).resolve().parent
 load_dotenv(_PROJECT_ROOT / ".env")
+
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
+
+if SUPABASE_URL and SUPABASE_KEY:
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+else:
+    supabase = None
 
 _ASSETS_DIR = _PROJECT_ROOT / "assets"
 _OUTPUT_DIR = _PROJECT_ROOT / "output"
@@ -44,20 +55,15 @@ st.markdown("""
 
 
 def load_library():
-    # Detecta PDFs e EPUBs salvos na pasta output
-    files = list(_OUTPUT_DIR.glob("*.pdf"))
-    lib = []
-    for f in sorted(files, key=os.path.getmtime, reverse=True):
-        epub_f = f.with_suffix(".epub")
-        lib.append({
-            "title": str(f.stem).replace("_", " "),
-            "pdf_path": str(f),
-            "pdf_name": str(f.name),
-            "epub_path": str(epub_f),
-            "epub_name": str(epub_f.name),
-            "has_epub": bool(epub_f.exists())
-        })
-    return lib
+    # Detecta E-books na Nuvem Global Supabase
+    if not supabase:
+        return []
+    try:
+        response = supabase.table("ebooks").select("*").order("created_at", desc=True).limit(20).execute()
+        return response.data
+    except Exception as e:
+        print(f"Erro ao carregar biblioteca da nuvem: {e}")
+        return []
 
 
 def main():
@@ -112,20 +118,19 @@ def main():
         gerar_3d = st.checkbox("🧊 Retornar Objeto 3D (Capa GLB)", value=False)
         
         st.divider()
-        st.header("Sua Biblioteca 📥")
+        st.header("Sua Biblioteca na Nuvem ☁️")
         biblioteca = load_library()
         if not biblioteca:
-            st.caption("Nenhum e-book gerado ainda.")
+            st.caption("Nenhum e-book gerado na nuvem ainda.")
         else:
             for item in biblioteca:
-                safe_title = str(item['title'])
+                safe_title = str(item.get('title', 'Sem Título'))
                 with st.expander(f"📖 {safe_title[:20]}..."):
-                    with open(str(item["pdf_path"]), "rb") as pdf_file:
-                        st.download_button("🔽 Baixar PDF", pdf_file, file_name=str(item["pdf_name"]), mime="application/pdf", key=f"pdf_{safe_title}")
-                    
-                    if item.get("has_epub"):
-                        with open(str(item["epub_path"]), "rb") as epub_file:
-                            st.download_button("🔽 Baixar EPUB", epub_file, file_name=str(item["epub_name"]), mime="application/epub+zip", key=f"epub_{safe_title}")
+                    st.markdown(f"**Tema:** {item.get('theme', 'N/A')}")
+                    if item.get("pdf_url"):
+                        st.markdown(f"[🔽 Baixar PDF Gráfico]({item['pdf_url']})")
+                    if item.get("has_epub") and item.get("epub_url"):
+                        st.markdown(f"[🔽 Baixar EPUB Fluido]({item['epub_url']})")
 
         if st.button("🗑️ Limpar Histórico do Chat"):
             st.session_state.messages = []
@@ -304,6 +309,32 @@ def main():
                         if capa_img:
                             generate_3d_html_cover(capa_img, ebook_data.get("title", "Ebook"), html_3d_path)
                     
+                    # Sincronização com Supabase (Nuvem)
+                    st.write("☁️ **Passo Final**: Sincronizando E-book com a Nuvem Global (Supabase)...")
+                    if supabase:
+                        pdf_blob_name = f"{job_id}/{os.path.basename(output_pdf_path)}"
+                        epub_blob_name = f"{job_id}/{os.path.basename(output_epub_path)}"
+                        
+                        # Upload PDF
+                        with open(output_pdf_path, 'rb') as f:
+                            supabase.storage.from_("ebooks_storage").upload(file=f, path=pdf_blob_name, file_options={"content-type": "application/pdf"})
+                        pdf_public_url = supabase.storage.from_("ebooks_storage").get_public_url(pdf_blob_name)
+                        
+                        # Upload EPUB
+                        with open(output_epub_path, 'rb') as f:
+                            supabase.storage.from_("ebooks_storage").upload(file=f, path=epub_blob_name, file_options={"content-type": "application/epub+zip"})
+                        epub_public_url = supabase.storage.from_("ebooks_storage").get_public_url(epub_blob_name)
+                        
+                        # Inserir no DB
+                        supabase.table("ebooks").insert({
+                            "title": ebook_data.get("title", "Meu Ebook"),
+                            "author": ebook_data.get("author", "Autor BookBot"),
+                            "theme": tema,
+                            "pdf_url": pdf_public_url,
+                            "epub_url": epub_public_url,
+                            "has_epub": True
+                        }).execute()
+
                     status.update(label="✅ E-Book Gerado com Sucesso!", state="complete", expanded=False)
                 
                 # Exibir balões de comemoração nativo do Streamlit

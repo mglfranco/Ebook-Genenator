@@ -15,3 +15,5 @@ streamlit
 edge-tts
 wikipedia-api
 bs4
+stripe
+supabase
