@@ -1,9 +1,7 @@
-﻿fastapi
-uvicorn[standard]
+﻿streamlit
 weasyprint
 markdown
 jinja2
-python-multipart
 Pillow
 language-tool-python
 google-generativeai
@@ -11,9 +9,8 @@ google-genai
 python-dotenv
 EbookLib
 qrcode
-streamlit
 edge-tts
 wikipedia-api
-bs4
+beautifulsoup4
 stripe
 supabase
