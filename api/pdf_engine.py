@@ -117,6 +117,21 @@ def generate_pdf(
 
     html_content = render_ebook_html(title, author, theme, chapters, image_paths, colorful_mode)
 
+    # CSS Dinâmico Baseado no Tema Visual Escolhido no Painel
+    css_dict = {
+        "Minimalista Moderno": "body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #ffffff; color: #333333; } h1, h2 { color: #000000; letter-spacing: -0.5px; font-weight: 300; } h3 { color: #555555; }",
+        "Fantasia Épica": "body { font-family: 'Garamond', 'Georgia', serif; background: #FDF6E3; color: #2C1E16; } h1, h2 { color: #8B4513; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #8B4513; padding-bottom: 5px; } p { font-size: 1.05em; line-height: 1.7; }",
+        "Corporativo Clean": "body { font-family: 'Roboto', 'Segoe UI', Tahoma, sans-serif; background: #ffffff; color: #1a1a1a; } h1, h2 { color: #003366; border-left: 5px solid #003366; padding-left: 15px; font-weight: bold; }",
+        "Sci-Fi Neon": "body { font-family: 'Courier New', Courier, monospace; background: #0b0c10; color: #66fcf1; } h1, h2 { color: #45a29e; border-bottom: 1px dashed #66fcf1; text-transform: uppercase; } p { color: #c5c6c7; }",
+        "Romance Clássico": "body { font-family: 'Georgia', serif; background: #FFFAFC; color: #4A3B3F; } h1, h2 { color: #b76e79; font-style: italic; text-align: center; font-weight: normal; } p { text-align: justify; }",
+        "Cyberpunk": "body { font-family: 'Consolas', 'Courier New', monospace; background: #12041D; color: #F3E600; } h1, h2 { color: #FF00FF; text-transform: uppercase; letter-spacing: 3px; background: #000000; padding: 5px; } p { color: #00FFFF; }",
+        "Vintage / Retrô": "body { font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif; background: #E6D5B8; color: #3E2723; } h1, h2 { color: #5D4037; font-weight: bold; text-decoration: underline; } blockquote { font-style: italic; border-left: 4px solid #8D6E63; padding-left: 10px; }",
+        "Aquarela Suave": "body { font-family: 'Verdana', sans-serif; background: #fdfefe; color: #5d6d7e; } h1, h2 { color: #AED6F1; font-weight: normal; } p { line-height: 1.8; }",
+    }
+    
+    theme_base = theme.split(" - ")[0] if " - " in theme else theme
+    theme_css = css_dict.get(theme_base, "body { font-family: Arial, sans-serif; line-height: 1.6; }")
+
     # Injetamos CSS adicional base para PDF + Sangria KDP
     style = f"""
     @page {{
@@ -128,10 +143,7 @@ def generate_pdf(
         margin: 0;
         bleed: {bleed_mm}mm;
     }}
-    body {{
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-    }}
+    {theme_css}
     .chapter-img {{
         width: 100%;
         max-height: 400px;

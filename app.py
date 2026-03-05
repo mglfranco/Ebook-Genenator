@@ -236,7 +236,11 @@ def main():
                             numero_capitulo=idx + 1,
                             total_capitulos=total_cap,
                             paginas=ch.get("pages", 5),
-                            tema=tema_completo,
+                            tema_historia=tema,
+                            ideia_principal=prompt,
+                            idioma=idioma,
+                            publico_alvo=publico,
+                            estilo_escrita=estilo,
                         )
                         raw_capitulos.append({
                             "title": ch["title"],
@@ -276,13 +280,13 @@ def main():
                     
                     st.write("🖨️ **Passo 5/5**: Compilando o layout gráfico no Weasyprint e EbookLib...")
                     pdf_path = generate_pdf(
-                        title=ebook_data.get("title", "Meu Ebook"),
+                        title=ebook_data.get("title", "Meu Livro Automático"),
                         author=ebook_data.get("author", "Autor BookBot"),
-                        theme=tema, # Mantém o tema curto pro texto da capa
-                        chapters=chapters_data,
+                        theme=tema,
+                        chapters=raw_capitulos,
                         image_paths=image_paths,
                         output_path=output_pdf_path,
-                        bleed_mm=int(sangria),
+                        bleed_mm=sangria,
                         colorful_mode=modo_colorido
                     )
                     output_epub_path = str(_OUTPUT_DIR / f"ebook_{job_id}.epub")

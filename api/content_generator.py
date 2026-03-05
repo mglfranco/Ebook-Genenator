@@ -79,36 +79,42 @@ def gerar_conteudo_capitulo(
     numero_capitulo: int,
     total_capitulos: int,
     paginas: int,
-    tema: str,
+    tema_historia: str,
+    ideia_principal: str,
+    idioma: str = "Português",
+    publico_alvo: str = "Geral",
+    estilo_escrita: str = "Profissional",
 ) -> str:
-    """Gera o conteúdo completo de um capítulo em Markdown."""
+    """Gera o conteúdo completo de um capítulo em Markdown dinâmico baseado no Painel."""
     palavras_alvo = paginas * 500
 
-    prompt = f"""Você é um escritor profissional e pesquisador acadêmico. 
+    prompt = f"""Você é um escritor profissional e conhecedor excepcional de literatura. 
 Escreva o capítulo {numero_capitulo} de {total_capitulos} para o livro "{titulo_livro}".
 
+**Ideia Principal do Livro:** {ideia_principal}
 **Título do Capítulo:** {titulo_capitulo}
-**Tema/Estilo:** {tema}
+**Gênero/Tema da História:** {tema_historia}
+**Público-Alvo:** {publico_alvo}
+**Tom/Estilo de Escrita:** {estilo_escrita}
+**Idioma Obrigatório:** {idioma}
 **Extensão:** Aproximadamente {palavras_alvo} palavras ({paginas} páginas)
 
 ## Regras OBRIGATÓRIAS:
 
-1. **SOMENTE INFORMAÇÕES REAIS E VERIFICÁVEIS** — Use apenas fatos, dados, estatísticas e referências de fontes confiáveis (artigos científicos, livros reconhecidos, instituições respeitadas).
-2. **NÃO INVENTE dados, citações ou estatísticas.** Se não tiver certeza, indique claramente.
-3. Escreva em **Português Brasileiro** com tom profissional mas acessível.
+1. **SOMENTE INFORMAÇÕES REAIS E VERIFICÁVEIS** — Use fatos, dados e uma narrativa que se conecte estritamente com a Ideia Principal do livro especificada.
+2. Escreva OBRIGATORIAMENTE no idioma: **{idioma}**.
+3. Aplique o tom de escrita **{estilo_escrita}** e garanta que o vocabulário seja ajustado perfeitamente para **{publico_alvo}**.
 4. Use **formatação Markdown rica**:
    - Cabeçalhos `##` e `###` para subdivisões
    - **Negrito** para termos-chave
    - *Itálico* para ênfase
    - Listas numeradas e com bullets
-   - `> Citações` para frases marcantes (com atribuição real)
-   - Tabelas quando apropriado para comparações
-   - Separadores `---` entre seções
-5. O conteúdo deve ser **extenso, detalhado e educativo**.
-6. Inclua exemplos práticos e analogias para facilitar compreensão.
+   - `> Citações` quando apropriado
+5. NÃO faça referências a "estilos visuais" ou "capas". Foque 100% no CONTEÚDO LITERAL e na LITERATURA do capítulo.
+6. O conteúdo deve ser extenso, detalhado, educativo e fluído.
 7. Termine o capítulo com um parágrafo de transição para o próximo.
 8. NÃO inclua o título do capítulo no início (ele é inserido automaticamente).
-9. Comece diretamente com o conteúdo, sem repetir o título.
+9. Comece diretamente com o conteúdo.
 
 Escreva o capítulo completo agora:"""
 
@@ -120,34 +126,5 @@ def gerar_todos_capitulos(
     capitulos: list[dict],
     tema: str,
 ) -> list[dict]:
-    """
-    Gera conteúdo para todos os capítulos com intervalo entre requisições.
-    """
-    total = len(capitulos)
-    resultado = []
-
-    for i, ch in enumerate(capitulos):
-        # Intervalo entre capítulos para evitar rate limit
-        if i > 0:
-            print(f"[Gemini] Aguardando 5s antes do capítulo {i+1}...")
-            import time
-            time.sleep(5)
-
-        print(f"[Gemini] Gerando capítulo {i+1}/{total}: {ch['title']}")
-        content_md = gerar_conteudo_capitulo(
-            titulo_livro=titulo_livro,
-            titulo_capitulo=ch["title"],
-            numero_capitulo=i + 1,
-            total_capitulos=total,
-            paginas=ch.get("pages", 5),
-            tema=tema,
-        )
-
-        resultado.append({
-            "title": ch["title"],
-            "content": content_md,
-            "content_md": content_md,
-        })
-        print(f"[Gemini] ✓ Capítulo {i + 1} gerado ({len(content_md)} chars)")
-
-    return resultado
+    # Mantido para compatibilidade legado, app.py agora chama gerar_conteudo_capitulo diretamente.
+    pass
