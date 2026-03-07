@@ -72,32 +72,30 @@ def _try_gemini_image(prompt: str, output_path: str, colorful_mode: bool = False
 
         client = genai.Client(api_key=api_key)
 
-        response = client.models.generate_content(
-            model="gemini-2.0-flash-exp-image-generation",
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_modalities=["IMAGE", "TEXT"],
+        response = client.models.generate_images(
+            model="imagen-3.0-generate-001",
+            prompt=prompt,
+            config=types.GenerateImagesConfig(
+                number_of_images=1,
+                aspect_ratio="3:4" if colorful_mode else "16:9",
+                person_generation="allow_adult",
+                output_mime_type="image/jpeg",
             ),
         )
 
         # Extract image from response
-        if response.candidates:
-            for part in response.candidates[0].content.parts:
-                if part.inline_data and part.inline_data.mime_type.startswith("image/"):
-                    img_data = part.inline_data.data
-                    if isinstance(img_data, str):
-                        img_data = base64.b64decode(img_data)
-
-                    img = Image.open(BytesIO(img_data))
-                    
-                    # Resize based on colorful mode (Vertical vs Horizontal)
-                    if colorful_mode:
-                        img = img.resize((800, 1200), Image.LANCZOS)
-                    else:
-                        img = img.resize((800, 450), Image.LANCZOS)
-                        
-                    img.save(output_path, quality=92)
-                    print(f"[IMG] ✓ Gemini gerou imagem: {output_path}")
+        if response.generated_images:
+            img_bytes = response.generated_images[0].image.image_bytes
+            img = Image.open(BytesIO(img_bytes))
+            
+            # Additional resize block just to match previous constraints locally
+            if colorful_mode:
+                img = img.resize((800, 1200), Image.LANCZOS)
+            else:
+                img = img.resize((800, 450), Image.LANCZOS)
+                
+            img.save(output_path, format="JPEG", quality=92)
+            print(f"[IMG] ✓ Imagen 3.0 gerou imagem: {output_path}")
                     return True
 
         return False
