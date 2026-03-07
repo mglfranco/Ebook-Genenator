@@ -118,19 +118,21 @@ def generate_pdf(
     html_content = render_ebook_html(title, author, theme, chapters, image_paths, colorful_mode)
 
     # CSS Dinâmico Baseado no Tema Visual Escolhido no Painel
+    # Em vez de tentar sobrescrever a tag `body`, injetamos Variáveis :root.
+    # Essas variáveis alimentam os card styles e shadows refinados de `style.css`.
     css_dict = {
-        "Minimalista Moderno": "body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #ffffff; color: #333333; } h1, h2 { color: #000000; letter-spacing: -0.5px; font-weight: 300; } h3 { color: #555555; }",
-        "Fantasia Épica": "body { font-family: 'Garamond', 'Georgia', serif; background: #FDF6E3; color: #2C1E16; } h1, h2 { color: #8B4513; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #8B4513; padding-bottom: 5px; } p { font-size: 1.05em; line-height: 1.7; }",
-        "Corporativo Clean": "body { font-family: 'Roboto', 'Segoe UI', Tahoma, sans-serif; background: #ffffff; color: #1a1a1a; } h1, h2 { color: #003366; border-left: 5px solid #003366; padding-left: 15px; font-weight: bold; }",
-        "Sci-Fi Neon": "body { font-family: 'Courier New', Courier, monospace; background: #0b0c10; color: #66fcf1; } h1, h2 { color: #45a29e; border-bottom: 1px dashed #66fcf1; text-transform: uppercase; } p { color: #c5c6c7; }",
-        "Romance Clássico": "body { font-family: 'Georgia', serif; background: #FFFAFC; color: #4A3B3F; } h1, h2 { color: #b76e79; font-style: italic; text-align: center; font-weight: normal; } p { text-align: justify; }",
-        "Cyberpunk": "body { font-family: 'Consolas', 'Courier New', monospace; background: #12041D; color: #F3E600; } h1, h2 { color: #FF00FF; text-transform: uppercase; letter-spacing: 3px; background: #000000; padding: 5px; } p { color: #00FFFF; }",
-        "Vintage / Retrô": "body { font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif; background: #E6D5B8; color: #3E2723; } h1, h2 { color: #5D4037; font-weight: bold; text-decoration: underline; } blockquote { font-style: italic; border-left: 4px solid #8D6E63; padding-left: 10px; }",
-        "Aquarela Suave": "body { font-family: 'Verdana', sans-serif; background: #fdfefe; color: #5d6d7e; } h1, h2 { color: #AED6F1; font-weight: normal; } p { line-height: 1.8; }",
+        "Minimalista Moderno": ":root { --color-bg: #ffffff; --color-bg-warm: #fcfcfc; --color-bg-cool: #f8f9fa; --color-text: #222222; --color-text-secondary: #555555; --color-accent: #000000; --font-sans: 'Helvetica Neue', Arial, sans-serif; --font-serif: 'Helvetica Neue', Arial, sans-serif; }",
+        "Fantasia Épica": ":root { --color-bg: #FDF6E3; --color-bg-warm: #F8E9C9; --color-bg-cool: #FAF1DD; --color-text: #2C1E16; --color-text-secondary: #4A3A2C; --color-accent: #8B4513; --color-accent-light: #A0522D; --font-sans: 'Georgia', serif; --font-serif: 'Garamond', 'Georgia', serif; }",
+        "Corporativo Clean": ":root { --color-bg: #ffffff; --color-bg-warm: #f0f4f8; --color-bg-cool: #e8ecf1; --color-text: #1a1a1a; --color-text-secondary: #4a5568; --color-accent: #003366; --color-accent-light: #00509e; --font-sans: 'Roboto', 'Segoe UI', Tahoma, sans-serif; --font-serif: 'Roboto', 'Segoe UI', Tahoma, sans-serif; }",
+        "Sci-Fi Neon": ":root { --color-bg: #0b0c10; --color-bg-warm: #13141a; --color-bg-cool: #1f2833; --color-text: #c5c6c7; --color-text-secondary: #a3a5a7; --color-accent: #45a29e; --color-accent-light: #66fcf1; --font-sans: 'Courier New', Courier, monospace; --font-serif: 'Courier New', Courier, monospace; }",
+        "Romance Clássico": ":root { --color-bg: #FFFAFC; --color-bg-warm: #FFEAF1; --color-bg-cool: #FFF0F5; --color-text: #4A3B3F; --color-text-secondary: #705B61; --color-accent: #b76e79; --color-accent-light: #d18d96; --font-sans: 'Georgia', serif; --font-serif: 'Georgia', serif; }",
+        "Cyberpunk": ":root { --color-bg: #12041D; --color-bg-warm: #1A0A29; --color-bg-cool: #240F38; --color-text: #00FFFF; --color-text-secondary: #00CCCC; --color-accent: #FF00FF; --color-accent-light: #F3E600; --font-sans: 'Consolas', monospace; --font-serif: 'Consolas', monospace; }",
+        "Vintage / Retrô": ":root { --color-bg: #E6D5B8; --color-bg-warm: #D4BFA6; --color-bg-cool: #C2A88B; --color-text: #3E2723; --color-text-secondary: #5D4037; --color-accent: #8D6E63; --color-accent-light: #A1887F; --font-sans: 'Palatino Linotype', 'Book Antiqua', Palatino, serif; --font-serif: 'Palatino Linotype', 'Book Antiqua', Palatino, serif; }",
+        "Aquarela Suave": ":root { --color-bg: #fdfefe; --color-bg-warm: #f4f8fa; --color-bg-cool: #edf2f5; --color-text: #5d6d7e; --color-text-secondary: #85929e; --color-accent: #5DADE2; --color-accent-light: #AED6F1; --font-sans: 'Verdana', sans-serif; --font-serif: 'Verdana', sans-serif; }",
     }
     
     theme_base = theme.split(" - ")[0] if " - " in theme else theme
-    theme_css = css_dict.get(theme_base, "body { font-family: Arial, sans-serif; line-height: 1.6; }")
+    theme_css = css_dict.get(theme_base, ":root { --color-bg: #ffffff; --color-text: #1a1a2e; }")
 
     # Injetamos CSS adicional base para PDF + Sangria KDP
     style = f"""
