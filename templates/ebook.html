@@ -3,41 +3,70 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }} — {{ author }}</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap"
+        rel="stylesheet">
 </head>
 
 <body>
 
     <!-- ========== CAPA ========== -->
     <section class="cover">
+        <div class="cover__pattern"></div>
+        <div class="cover__glow cover__glow--top"></div>
+        <div class="cover__glow cover__glow--bottom"></div>
         <div class="cover__inner">
             <span class="cover__badge">{{ theme }}</span>
             <div class="cover__divider"></div>
             <h1 class="cover__title">{{ title }}</h1>
             <p class="cover__subtitle">Uma obra gerada com inteligência artificial e design premium</p>
-            <p class="cover__author">{{ author }}</p>
+            <div class="cover__author-block">
+                <div class="cover__author-line"></div>
+                <p class="cover__author">{{ author }}</p>
+                <div class="cover__author-line"></div>
+            </div>
             <p class="cover__year">{{ year }}</p>
         </div>
     </section>
 
     <!-- ========== SUMÁRIO ========== -->
     <nav class="toc">
-        <p class="toc__label">Navegação</p>
-        <h2 class="toc__heading">Sumário</h2>
-        <p class="toc__desc">{{ chapters|length }} capítulos cuidadosamente elaborados</p>
-        <div class="toc__line"></div>
+        <div class="toc__header">
+            <span class="toc__label">Navegação</span>
+            <h2 class="toc__heading">Sumário</h2>
+            <p class="toc__desc">{{ chapters|length }} capítulos cuidadosamente elaborados</p>
+            <div class="toc__line"></div>
+        </div>
         <ol class="toc__list">
             {% for chapter in chapters %}
             <li class="toc__item">
-                <a href="#cap-{{ loop.index }}" style="display:flex; text-decoration:none; color:inherit; width:100%">
+                <a href="#cap-{{ loop.index }}" class="toc__link">
                     <span class="toc__num">{{ "%02d"|format(loop.index) }}</span>
                     <span class="toc__chapter-title">{{ chapter.title }}</span>
+                    <span class="toc__dots"></span>
                 </a>
             </li>
             {% endfor %}
         </ol>
     </nav>
+
+    <!-- ========== EPÍGRAFE ========== -->
+    {% if epigraph %}
+    <section class="epigraph">
+        <div class="epigraph__inner">
+            <div class="epigraph__quote-mark">"</div>
+            <blockquote class="epigraph__text">{{ epigraph }}</blockquote>
+            {% if epigraph_author %}
+            <cite class="epigraph__author">— {{ epigraph_author }}</cite>
+            {% endif %}
+            <div class="epigraph__ornament">◆</div>
+        </div>
+    </section>
+    {% endif %}
 
     <!-- ========== CAPÍTULOS ========== -->
     {% for chapter in chapters %}
@@ -57,6 +86,7 @@
                 {% endif %}
 
                 <header class="chapter__header">
+                    <div class="chapter__number-badge">{{ "%02d"|format(loop.index) }}</div>
                     <span class="chapter__label">Capítulo {{ "%02d"|format(loop.index) }}</span>
                     <h2 class="chapter__title">{{ chapter.title }}</h2>
                     <div class="chapter__accent"></div>
@@ -67,7 +97,11 @@
                 </div>
 
                 {% if not loop.last %}
-                <div class="divider">✦ ✦ ✦</div>
+                <div class="ornament">
+                    <span class="ornament__line"></span>
+                    <span class="ornament__diamond">◆</span>
+                    <span class="ornament__line"></span>
+                </div>
                 {% endif %}
 
                 {% if colorful_mode and chapter.image_path %}
@@ -78,15 +112,23 @@
 
     <!-- ========== CONTRACAPA ========== -->
     <section class="backcover">
+        <div class="backcover__pattern"></div>
         <div class="backcover__card">
-            <span class="backcover__icon">📚</span>
+            <div class="backcover__logo">
+                <span class="backcover__logo-icon">B</span>
+            </div>
             <p class="backcover__title">{{ title }}</p>
             <p class="backcover__author">por {{ author }}</p>
             <div class="backcover__divider"></div>
             <p class="backcover__text">
-                Obra gerada por Franco com tecnologia de ponta.<br>
-                Design inspirado em VOCÊ
+                Obra gerada com inteligência artificial<br>
+                e design editorial de ponta.
             </p>
+            <div class="backcover__footer">
+                <span class="backcover__footer-line"></span>
+                <span class="backcover__footer-text">BookBot Studio</span>
+                <span class="backcover__footer-line"></span>
+            </div>
         </div>
     </section>
 

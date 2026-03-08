@@ -1,42 +1,62 @@
 /* =============================================================
-   E-book Generator V2 — Gamma.app Inspired Design
+   E-book Generator V3 — Premium Editorial Design
    =============================================================
-   Estética premium: cards com sombras, gradientes suaves,
-   tipografia refinada, espaçamento generoso, visual de
-   apresentação profissional tipo Gamma.app.
+   Tipografia Inter + Playfair Display, glassmorphism,
+   ornamentos decorativos, paleta HSL refinada,
+   e estética de nível editorial Taschen/Gamma.app.
    ============================================================= */
+
+/* ---------- Google Fonts Import (fallback for PDF) ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap');
 
 /* ---------- Design Tokens ---------- */
 :root {
     --color-bg: #ffffff;
     --color-bg-warm: #faf9f7;
-    --color-bg-cool: #f4f3ff;
-    --color-bg-dark: #0c0a1d;
-    --color-bg-dark-mid: #16132d;
+    --color-bg-cool: #f0eef8;
+    --color-bg-dark: #0a0818;
+    --color-bg-dark-mid: #13102a;
 
     --color-text: #1a1a2e;
-    --color-text-secondary: #555570;
-    --color-text-light: #8b8ba0;
+    --color-text-secondary: #4a4a6a;
+    --color-text-light: #8888a8;
     --color-text-white: #f5f5fa;
 
     --color-accent: #6c5ce7;
     --color-accent-light: #a29bfe;
-    --color-accent-soft: rgba(108, 92, 231, 0.08);
-    --color-accent-border: rgba(108, 92, 231, 0.18);
+    --color-accent-soft: rgba(108, 92, 231, 0.07);
+    --color-accent-border: rgba(108, 92, 231, 0.15);
+    --color-accent-glow: rgba(108, 92, 231, 0.25);
+    --color-gold: #c9a959;
 
-    --font-sans: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
-    --font-serif: Georgia, 'Palatino Linotype', 'Book Antiqua', serif;
-    --font-mono: 'Cascadia Code', 'Consolas', monospace;
+    --gradient-accent: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 50%, #fd79a8 100%);
+    --gradient-dark: linear-gradient(160deg, #0a0818 0%, #1a1040 40%, #2d1b69 70%, #6c5ce7 100%);
+    --gradient-warm: linear-gradient(135deg, #faf9f7 0%, #f0eef8 100%);
+
+    /* Theme-responsive cover/backcover colors */
+    --color-cover-card-bg: rgba(20, 16, 50, 0.65);
+    --color-cover-glow-1: rgba(108, 92, 231, 0.20);
+    --color-cover-glow-2: rgba(253, 121, 168, 0.15);
+    --color-cover-pattern-1: rgba(108, 92, 231, 0.08);
+    --color-cover-pattern-2: rgba(162, 155, 254, 0.06);
+    --color-accent-shadow: rgba(108, 92, 231, 0.3);
+
+    --font-body: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-display: 'Playfair Display', Georgia, 'Palatino Linotype', serif;
+    --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
 
     --radius-sm: 8px;
     --radius-md: 14px;
     --radius-lg: 20px;
     --radius-xl: 28px;
+    --radius-full: 50%;
 
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
-    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
-    --shadow-card: 0 2px 20px rgba(108, 92, 231, 0.07);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.12), 0 8px 20px rgba(0, 0, 0, 0.06);
+    --shadow-card: 0 2px 20px rgba(108, 92, 231, 0.08);
+    --shadow-glow: 0 0 40px rgba(108, 92, 231, 0.15);
 }
 
 /* ---------- Page Rules ---------- */
@@ -46,11 +66,11 @@
 
     @bottom-center {
         content: counter(page);
-        font-family: var(--font-sans);
-        font-size: 9pt;
+        font-family: var(--font-body);
+        font-size: 8.5pt;
         font-weight: 500;
         color: var(--color-accent);
-        letter-spacing: 0.05em;
+        letter-spacing: 0.12em;
     }
 }
 
@@ -68,7 +88,7 @@
     }
 }
 
-/* ---------- Base ---------- */
+/* ---------- Base Reset ---------- */
 *,
 *::before,
 *::after {
@@ -79,160 +99,205 @@
 
 html {
     font-size: 11pt;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-    font-family: var(--font-sans);
+    font-family: var(--font-body);
     font-weight: 400;
-    line-height: 1.75;
+    line-height: 1.8;
     color: var(--color-text);
     background: var(--color-bg);
+    letter-spacing: 0.005em;
 }
 
 /* =========================================================
-   CAPA — Full-bleed dark gradient with centered card
+   CAPA — Premium dark gradient with glassmorphism card
    ========================================================= */
 .cover {
     page-break-after: always;
     min-height: 100vh;
-    background: linear-gradient(160deg, #0c0a1d 0%, #1a1640 35%, #2d1f6e 65%, #6c5ce7 100%);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    background: var(--gradient-dark);
     text-align: center;
-    padding: 4cm 3cm;
+    padding: 8cm 3cm 4cm;
     color: var(--color-text-white);
     position: relative;
+    overflow: hidden;
 }
 
-/* Decorative circles on cover */
-.cover::before {
-    content: '';
+/* Geometric pattern overlay */
+.cover__pattern {
     position: absolute;
-    width: 18cm;
-    height: 18cm;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(108, 92, 231, 0.12) 0%, transparent 70%);
-    top: -4cm;
-    right: -6cm;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image:
+        radial-gradient(circle at 25% 25%, var(--color-cover-pattern-1) 1px, transparent 1px),
+        radial-gradient(circle at 75% 75%, var(--color-cover-pattern-2) 1px, transparent 1px);
+    background-size: 40px 40px, 60px 60px;
+    z-index: 0;
 }
 
-.cover::after {
-    content: '';
+/* Glow orbs */
+.cover__glow {
     position: absolute;
-    width: 12cm;
-    height: 12cm;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(162, 155, 254, 0.1) 0%, transparent 70%);
-    bottom: -2cm;
-    left: -3cm;
+    z-index: 0;
 }
 
+.cover__glow--top {
+    width: 20cm;
+    height: 20cm;
+    background: radial-gradient(circle, var(--color-cover-glow-1) 0%, transparent 70%);
+    top: -6cm;
+    right: -5cm;
+}
+
+.cover__glow--bottom {
+    width: 16cm;
+    height: 16cm;
+    background: radial-gradient(circle, var(--color-cover-glow-2) 0%, transparent 70%);
+    bottom: -4cm;
+    left: -4cm;
+}
+
+/* Cover card — glassmorphism */
 .cover__inner {
     position: relative;
     z-index: 1;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--color-cover-card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.10);
     border-radius: var(--radius-xl);
-    padding: 3cm 2.5cm;
+    padding: 2.5cm 2cm;
     max-width: 14cm;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    margin: 0 auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
 }
 
 .cover__badge {
     display: inline-block;
-    font-size: 7.5pt;
+    font-family: var(--font-body);
+    font-size: 7pt;
     font-weight: 600;
-    letter-spacing: 0.3em;
+    letter-spacing: 0.35em;
     text-transform: uppercase;
     color: var(--color-accent-light);
-    background: rgba(162, 155, 254, 0.12);
-    border: 1px solid rgba(162, 155, 254, 0.2);
+    background: rgba(108, 92, 231, 0.12);
+    border: 1px solid rgba(162, 155, 254, 0.25);
     border-radius: 30px;
-    padding: 0.15cm 0.8cm;
+    padding: 0.12cm 0.9cm;
     margin-bottom: 1.2cm;
 }
 
 .cover__divider {
-    width: 50px;
+    width: 60px;
     height: 3px;
-    background: linear-gradient(90deg, var(--color-accent-light), var(--color-accent));
+    background: var(--gradient-accent);
     margin: 0 auto 1.2cm;
     border-radius: 3px;
 }
 
 .cover__title {
-    font-family: var(--font-serif);
-    font-size: 32pt;
+    font-family: var(--font-display);
+    font-size: 34pt;
     font-weight: 700;
-    line-height: 1.15;
-    letter-spacing: -0.03em;
-    margin-bottom: 0.5cm;
+    line-height: 1.12;
+    letter-spacing: -0.04em;
+    margin-bottom: 0.6cm;
     color: #ffffff;
+    text-shadow: 0 2px 20px rgba(108, 92, 231, 0.3);
 }
 
 .cover__subtitle {
-    font-size: 10.5pt;
-    font-weight: 400;
-    color: rgba(255, 255, 255, 0.55);
+    font-family: var(--font-body);
+    font-size: 10pt;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.50);
     margin-bottom: 1.5cm;
     line-height: 1.6;
+    letter-spacing: 0.02em;
+}
+
+.cover__author-block {
+    text-align: center;
+    margin-bottom: 0.5cm;
+}
+
+.cover__author-line {
+    display: inline-block;
+    width: 30px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.20);
+    vertical-align: middle;
+    margin: 0 0.3cm;
 }
 
 .cover__author {
-    font-size: 11.5pt;
+    font-family: var(--font-body);
+    font-size: 11pt;
     font-weight: 500;
     color: rgba(255, 255, 255, 0.85);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
 }
 
 .cover__year {
-    font-size: 8.5pt;
+    font-family: var(--font-body);
+    font-size: 8pt;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.35);
-    margin-top: 0.4cm;
+    color: rgba(255, 255, 255, 0.30);
+    letter-spacing: 0.2em;
 }
 
 /* =========================================================
-   SUMÁRIO — Clean card list
+   SUMÁRIO — Premium numbered card list
    ========================================================= */
 .toc {
     page-break-after: always;
     padding-top: 2cm;
 }
 
+.toc__header {
+    margin-bottom: 1.2cm;
+}
+
 .toc__label {
-    font-size: 8pt;
+    font-family: var(--font-body);
+    font-size: 7.5pt;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.3em;
+    letter-spacing: 0.35em;
     color: var(--color-accent);
-    margin-bottom: 0.4cm;
+    margin-bottom: 0.3cm;
+    display: block;
 }
 
 .toc__heading {
-    font-family: var(--font-serif);
-    font-size: 26pt;
+    font-family: var(--font-display);
+    font-size: 28pt;
     font-weight: 700;
     color: var(--color-text);
-    margin-bottom: 0.4cm;
-    letter-spacing: -0.02em;
+    margin-bottom: 0.3cm;
+    letter-spacing: -0.03em;
 }
 
 .toc__desc {
+    font-family: var(--font-body);
     font-size: 10pt;
+    font-weight: 300;
     color: var(--color-text-secondary);
-    margin-bottom: 1.5cm;
+    margin-bottom: 1cm;
     line-height: 1.6;
 }
 
 .toc__line {
-    width: 40px;
+    width: 50px;
     height: 3px;
-    background: var(--color-accent);
+    background: var(--gradient-accent);
     border-radius: 3px;
-    margin-bottom: 1.5cm;
+    margin-bottom: 1cm;
 }
 
 .toc__list {
@@ -241,28 +306,106 @@ body {
 }
 
 .toc__item {
-    display: flex;
-    align-items: center;
-    padding: 0.5cm 0.7cm;
-    margin-bottom: 0.25cm;
+    margin-bottom: 0.2cm;
+}
+
+.toc__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding: 0.45cm 0.7cm;
     background: var(--color-bg-warm);
     border-radius: var(--radius-md);
-    border: 1px solid rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    border-left: 3px solid var(--color-accent);
 }
 
 .toc__num {
-    font-family: var(--font-sans);
+    display: inline-block;
+    font-family: var(--font-display);
     font-weight: 700;
-    font-size: 13pt;
+    font-size: 14pt;
     color: var(--color-accent);
     min-width: 1.8cm;
+    line-height: 1;
+    vertical-align: middle;
 }
 
 .toc__chapter-title {
+    display: inline-block;
+    font-family: var(--font-body);
     font-weight: 500;
-    font-size: 11pt;
+    font-size: 10.5pt;
     color: var(--color-text);
-    flex: 1;
+    vertical-align: middle;
+}
+
+.toc__dots {
+    flex: 0 0 auto;
+    border-bottom: 1px dotted var(--color-text-light);
+    min-width: 1cm;
+    margin: 0 0.3cm;
+    align-self: flex-end;
+    margin-bottom: 0.15cm;
+    display: none;
+    /* hidden for now, visible if page numbers added */
+}
+
+/* =========================================================
+   EPÍGRAFE — Editorial quote page
+   ========================================================= */
+.epigraph {
+    page-break-after: always;
+    min-height: 70vh;
+    text-align: center;
+    padding: 8cm 4cm 4cm;
+    background: var(--gradient-warm);
+}
+
+.epigraph__inner {
+    max-width: 10cm;
+    margin: 0 auto;
+    position: relative;
+}
+
+.epigraph__quote-mark {
+    font-family: var(--font-display);
+    font-size: 72pt;
+    font-weight: 800;
+    color: var(--color-accent-soft);
+    line-height: 0.6;
+    margin-bottom: 0.5cm;
+    display: block;
+}
+
+.epigraph__text {
+    font-family: var(--font-display);
+    font-size: 14pt;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.7;
+    color: var(--color-text-secondary);
+    border: none;
+    padding: 0;
+    margin: 0 0 0.8cm;
+    background: none;
+}
+
+.epigraph__author {
+    font-family: var(--font-body);
+    font-size: 9.5pt;
+    font-weight: 500;
+    color: var(--color-accent);
+    letter-spacing: 0.08em;
+    display: block;
+    margin-bottom: 1.2cm;
+    font-style: normal;
+}
+
+.epigraph__ornament {
+    font-size: 10pt;
+    color: var(--color-accent-light);
+    letter-spacing: 0.5em;
 }
 
 /* =========================================================
@@ -295,7 +438,7 @@ body {
     height: 7cm;
     background: linear-gradient(to top,
             #ffffff 0%,
-            rgba(255, 255, 255, 0.95) 25%,
+            rgba(255, 255, 255, 0.97) 20%,
             rgba(255, 255, 255, 0.6) 55%,
             transparent 100%);
 }
@@ -304,27 +447,47 @@ body {
 .chapter__header {
     position: relative;
     margin-top: -2cm;
-    margin-bottom: 1.2cm;
-    padding: 0.8cm 1cm;
+    margin-bottom: 1.4cm;
+    padding: 0.8cm 1cm 0.8cm 1.8cm;
     background: var(--color-bg);
     border-radius: var(--radius-lg);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
     z-index: 2;
 }
 
-.chapter__label {
-    font-size: 7.5pt;
+/* Numbered badge on header */
+.chapter__number-badge {
+    position: absolute;
+    top: -0.5cm;
+    left: -0.5cm;
+    width: 1.6cm;
+    height: 1.6cm;
+    line-height: 1.6cm;
+    text-align: center;
+    background: var(--gradient-accent);
+    border-radius: var(--radius-full);
+    display: block;
+    font-family: var(--font-display);
     font-weight: 700;
+    font-size: 13pt;
+    color: #ffffff;
+    box-shadow: 0 4px 16px var(--color-accent-shadow);
+}
+
+.chapter__label {
+    font-family: var(--font-body);
+    font-size: 7pt;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.3em;
+    letter-spacing: 0.35em;
     color: var(--color-accent);
-    margin-bottom: 0.25cm;
+    margin-bottom: 0.15cm;
     display: block;
 }
 
 .chapter__title {
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
     font-size: 24pt;
     font-weight: 700;
     line-height: 1.2;
@@ -334,9 +497,9 @@ body {
 }
 
 .chapter__accent {
-    width: 35px;
+    width: 40px;
     height: 3px;
-    background: linear-gradient(90deg, var(--color-accent), var(--color-accent-light));
+    background: var(--gradient-accent);
     border-radius: 3px;
 }
 
@@ -348,14 +511,14 @@ body {
     widows: 3;
 }
 
-/* Drop Cap */
+/* Drop Cap — Premium serif style */
 .chapter__body>p:first-of-type::first-letter {
-    font-family: var(--font-serif);
-    font-size: 3.4em;
-    line-height: 0.85;
-    padding-right: 0.05em;
+    font-family: var(--font-display);
+    font-size: 3.2em;
+    line-height: 1;
+    padding-right: 0.06em;
     color: var(--color-accent);
-    font-weight: 700;
+    font-weight: 800;
 }
 
 /* Paragraphs */
@@ -364,31 +527,34 @@ body {
     font-size: 10.5pt;
     line-height: 1.85;
     color: var(--color-text);
+    font-weight: 400;
 }
 
 /* ---- Headings ---- */
 .chapter__body h1 {
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
     font-size: 20pt;
     font-weight: 700;
     color: var(--color-text);
-    margin: 1.4cm 0 0.5cm;
+    margin: 1.5cm 0 0.5cm;
     page-break-after: avoid;
+    letter-spacing: -0.01em;
 }
 
 .chapter__body h2 {
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
     font-size: 15pt;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--color-accent);
     margin: 1.2cm 0 0.4cm;
     padding-bottom: 0.2cm;
     border-bottom: 2px solid var(--color-accent-soft);
     page-break-after: avoid;
+    letter-spacing: -0.01em;
 }
 
 .chapter__body h3 {
-    font-family: var(--font-sans);
+    font-family: var(--font-body);
     font-size: 12pt;
     font-weight: 600;
     color: var(--color-text);
@@ -397,7 +563,7 @@ body {
 }
 
 .chapter__body h4 {
-    font-family: var(--font-sans);
+    font-family: var(--font-body);
     font-size: 10.5pt;
     font-weight: 600;
     font-style: italic;
@@ -414,7 +580,7 @@ body {
 
 .chapter__body li {
     margin-bottom: 0.15cm;
-    line-height: 1.75;
+    line-height: 1.8;
     font-size: 10.5pt;
 }
 
@@ -423,14 +589,15 @@ body {
     font-weight: 600;
 }
 
-/* ---- Blockquotes (Gamma-style card) ---- */
+/* ---- Blockquotes — Editorial card style ---- */
 .chapter__body blockquote {
-    margin: 0.8cm 0;
-    padding: 0.65cm 0.9cm;
-    background: linear-gradient(135deg, var(--color-bg-cool), var(--color-bg-warm));
+    margin: 1cm 0;
+    padding: 0.8cm 1cm 0.8cm 1.2cm;
+    background: var(--gradient-warm);
     border: 1px solid var(--color-accent-border);
     border-left: 4px solid var(--color-accent);
     border-radius: var(--radius-md);
+    font-family: var(--font-display);
     font-style: italic;
     font-size: 10.5pt;
     line-height: 1.75;
@@ -442,18 +609,20 @@ body {
 
 .chapter__body blockquote::before {
     content: "\201C";
-    font-family: var(--font-serif);
-    font-size: 42pt;
-    color: rgba(108, 92, 231, 0.12);
+    font-family: var(--font-display);
+    font-size: 48pt;
+    font-weight: 800;
+    color: rgba(108, 92, 231, 0.10);
     position: absolute;
-    top: -0.15cm;
-    left: 0.2cm;
+    top: -0.1cm;
+    left: 0.3cm;
     line-height: 1;
 }
 
 .chapter__body blockquote p {
     margin-bottom: 0.15cm;
     position: relative;
+    font-family: var(--font-display);
 }
 
 /* ---- Code ---- */
@@ -461,22 +630,22 @@ body {
     font-family: var(--font-mono);
     background: var(--color-accent-soft);
     padding: 0.04cm 0.14cm;
-    border-radius: var(--radius-sm);
+    border-radius: 6px;
     font-size: 9pt;
     color: var(--color-accent);
     border: 1px solid var(--color-accent-border);
 }
 
 .chapter__body pre {
-    background: #1e1e2e;
-    color: #cdd6f4;
-    padding: 0.6cm 0.8cm;
+    background: #1a1a2e;
+    color: #e2e8f0;
+    padding: 0.7cm 0.9cm;
     border-radius: var(--radius-md);
-    margin: 0.5cm 0;
+    margin: 0.6cm 0;
     font-size: 9pt;
-    line-height: 1.55;
+    line-height: 1.6;
     page-break-inside: avoid;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(108, 92, 231, 0.15);
     box-shadow: var(--shadow-lg);
     overflow-x: auto;
 }
@@ -489,12 +658,12 @@ body {
     font-size: inherit;
 }
 
-/* ---- Tables (Gamma card style) ---- */
+/* ---- Tables — Premium zebra-stripe style ---- */
 .chapter__body table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    margin: 0.6cm 0;
+    margin: 0.7cm 0;
     border-radius: var(--radius-md);
     overflow: hidden;
     border: 1px solid rgba(0, 0, 0, 0.06);
@@ -503,14 +672,15 @@ body {
 }
 
 .chapter__body th {
-    background: var(--color-accent-soft);
+    background: var(--gradient-accent);
+    font-family: var(--font-body);
     font-weight: 600;
-    font-size: 9.5pt;
-    color: var(--color-accent);
-    padding: 0.3cm 0.5cm;
+    font-size: 9pt;
+    color: #ffffff;
+    padding: 0.35cm 0.5cm;
     text-align: left;
-    letter-spacing: 0.02em;
-    border-bottom: 2px solid var(--color-accent-border);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
 }
 
 .chapter__body td {
@@ -518,6 +688,10 @@ body {
     font-size: 10pt;
     border-bottom: 1px solid rgba(0, 0, 0, 0.04);
     color: var(--color-text);
+}
+
+.chapter__body tr:nth-child(even) td {
+    background: var(--color-bg-warm);
 }
 
 .chapter__body tr:last-child td {
@@ -528,7 +702,7 @@ body {
 .chapter__body hr {
     border: none;
     height: 1px;
-    background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.08) 20%, rgba(0, 0, 0, 0.08) 80%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, var(--color-accent-border) 20%, var(--color-accent-border) 80%, transparent 100%);
     margin: 1.2cm 0;
 }
 
@@ -545,75 +719,176 @@ body {
 .chapter__body a {
     color: var(--color-accent);
     text-decoration: none;
+    border-bottom: 1px solid var(--color-accent-border);
 }
 
-/* =========================================================
-   SECTION DIVIDER
-   ========================================================= */
-.divider {
-    text-align: center;
-    margin: 1.2cm 0;
-    color: var(--color-accent-light);
-    font-size: 11pt;
-    letter-spacing: 0.6em;
-}
-
-/* =========================================================
-   CONTRACAPA
-   ========================================================= */
-.backcover {
-    page-break-before: always;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 70vh;
-    text-align: center;
-    padding: 4cm;
-}
-
-.backcover__card {
-    background: linear-gradient(135deg, var(--color-bg-cool), var(--color-bg-warm));
-    border: 1px solid var(--color-accent-border);
-    border-radius: var(--radius-xl);
-    padding: 2cm 2.5cm;
-    box-shadow: var(--shadow-lg);
-    max-width: 12cm;
-}
-
-.backcover__icon {
-    font-size: 28pt;
-    margin-bottom: 0.8cm;
+/* ---- Images inside chapter body ---- */
+.chapter__body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    margin: 0.5cm 0;
     display: block;
 }
 
+/* =========================================================
+   ORNAMENT DIVIDER — Premium decorative separator
+   ========================================================= */
+.ornament {
+    text-align: center;
+    margin: 1.5cm 0;
+}
+
+.ornament__line {
+    display: inline-block;
+    width: 3cm;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-accent-border), transparent);
+    vertical-align: middle;
+}
+
+.ornament__diamond {
+    display: inline-block;
+    font-size: 9pt;
+    color: var(--color-accent-light);
+    line-height: 1;
+    margin: 0 0.3cm;
+    vertical-align: middle;
+}
+
+/* =========================================================
+   CONTRACAPA — Premium editorial back cover
+   ========================================================= */
+.backcover {
+    page-break-before: always;
+    min-height: 80vh;
+    text-align: center;
+    padding: 8cm 4cm 4cm;
+    background: var(--gradient-dark);
+    position: relative;
+    overflow: hidden;
+}
+
+.backcover__pattern {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image:
+        radial-gradient(circle at 30% 40%, var(--color-cover-pattern-1) 1px, transparent 1px),
+        radial-gradient(circle at 70% 60%, var(--color-cover-pattern-2) 1px, transparent 1px);
+    background-size: 35px 35px, 50px 50px;
+    z-index: 0;
+}
+
+.backcover__card {
+    position: relative;
+    z-index: 1;
+    background: var(--color-cover-card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: var(--radius-xl);
+    padding: 2cm 2.5cm;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 12cm;
+    margin: 0 auto;
+}
+
+.backcover__logo {
+    margin-bottom: 0.8cm;
+}
+
+.backcover__logo-icon {
+    display: inline-block;
+    width: 1.5cm;
+    height: 1.5cm;
+    line-height: 1.5cm;
+    text-align: center;
+    background: var(--gradient-accent);
+    border-radius: var(--radius-md);
+    font-family: var(--font-display);
+    font-size: 16pt;
+    font-weight: 800;
+    color: #ffffff;
+    box-shadow: 0 4px 16px var(--color-accent-shadow);
+}
+
 .backcover__title {
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
     font-size: 16pt;
     font-weight: 700;
-    color: var(--color-text);
-    margin-bottom: 0.3cm;
+    color: #ffffff;
+    margin-bottom: 0.2cm;
+    letter-spacing: -0.01em;
 }
 
 .backcover__author {
+    font-family: var(--font-body);
     font-size: 10pt;
-    color: var(--color-text-secondary);
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.55);
     margin-bottom: 0.8cm;
 }
 
 .backcover__divider {
-    width: 40px;
+    width: 50px;
     height: 3px;
-    background: linear-gradient(90deg, var(--color-accent), var(--color-accent-light));
+    background: var(--gradient-accent);
     margin: 0 auto 0.8cm;
     border-radius: 3px;
 }
 
 .backcover__text {
-    font-size: 10pt;
+    font-family: var(--font-body);
+    font-size: 9.5pt;
+    font-weight: 300;
     font-style: italic;
-    color: var(--color-text-light);
+    color: rgba(255, 255, 255, 0.45);
     line-height: 1.7;
+    margin-bottom: 1.2cm;
+}
+
+.backcover__footer {
+    text-align: center;
+}
+
+.backcover__footer-line {
+    display: inline-block;
+    width: 25px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.15);
+    vertical-align: middle;
+    margin: 0 0.3cm;
+}
+
+.backcover__footer-text {
+    font-family: var(--font-body);
+    font-size: 7.5pt;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+/* =========================================================
+   COLORFUL MODE — Full-bleed image background
+   ========================================================= */
+.colorful-mode {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    padding: 15mm;
+    box-sizing: border-box;
+}
+
+.colorful-mode .glass-container {
+    background-color: rgba(255, 255, 255, 0.92);
+    padding: 30px;
+    border-radius: var(--radius-lg);
+    min-height: 85vh;
+    box-shadow: var(--shadow-xl);
 }
 
 /* =========================================================

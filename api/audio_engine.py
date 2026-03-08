@@ -31,7 +31,7 @@ def generate_audiobook_cli(title: str, chapters: list[dict], output_path: str) -
     try:
         # Voz padrão PT-BR Neural do Edge
         voz = "pt-BR-AntonioNeural"
-        cmd = ["edge-tts", "--voice", voz, "-f", temp_txt, "--write-media", output_path]
+        cmd = [sys.executable, "-m", "edge_tts", "--voice", voz, "-f", temp_txt, "--write-media", output_path]
         subprocess.run(cmd, check=True)
     finally:
         os.remove(temp_txt)

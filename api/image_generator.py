@@ -21,34 +21,44 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 # ---------------------------------------------------------------
 THEME_PALETTES = {
     "Minimalista Moderno": {
-        "bg": [(30, 30, 50), (45, 35, 65)],
-        "accent": [(124, 58, 237), (167, 139, 250)],
-        "glow": (124, 58, 237),
+        "bg": [(10, 10, 10), (26, 26, 26)],
+        "accent": [(34, 34, 34), (85, 85, 85)],
+        "glow": (100, 100, 100),
     },
-    "Ficção Científica Neon": {
-        "bg": [(5, 5, 25), (10, 10, 40)],
-        "accent": [(0, 245, 212), (123, 47, 247)],
-        "glow": (0, 245, 212),
+    "Fantasia Épica": {
+        "bg": [(26, 15, 8), (44, 30, 22)],
+        "accent": [(139, 69, 19), (205, 133, 63)],
+        "glow": (139, 69, 19),
     },
-    "Aquarela Clássica": {
-        "bg": [(60, 40, 50), (80, 50, 70)],
-        "accent": [(240, 147, 251), (245, 87, 108)],
-        "glow": (240, 147, 251),
+    "Corporativo Clean": {
+        "bg": [(10, 22, 40), (21, 34, 56)],
+        "accent": [(0, 51, 102), (26, 115, 232)],
+        "glow": (0, 80, 158),
     },
-    "Corporativo Elegante": {
-        "bg": [(25, 30, 35), (40, 45, 50)],
-        "accent": [(45, 52, 54), (99, 110, 114)],
-        "glow": (99, 110, 114),
+    "Sci-Fi Neon": {
+        "bg": [(5, 6, 8), (11, 12, 16)],
+        "accent": [(69, 162, 158), (102, 252, 241)],
+        "glow": (102, 252, 241),
     },
-    "Vintage Retrô": {
-        "bg": [(50, 35, 20), (70, 50, 30)],
-        "accent": [(201, 149, 107), (139, 105, 20)],
-        "glow": (201, 149, 107),
+    "Romance Clássico": {
+        "bg": [(26, 15, 18), (45, 31, 36)],
+        "accent": [(183, 110, 121), (209, 141, 150)],
+        "glow": (183, 110, 121),
     },
-    "Natureza Orgânica": {
-        "bg": [(10, 35, 30), (20, 50, 40)],
-        "accent": [(17, 153, 142), (56, 239, 125)],
-        "glow": (17, 153, 142),
+    "Cyberpunk": {
+        "bg": [(5, 1, 8), (18, 4, 29)],
+        "accent": [(255, 0, 255), (243, 230, 0)],
+        "glow": (255, 0, 255),
+    },
+    "Vintage / Retrô": {
+        "bg": [(26, 16, 12), (62, 39, 35)],
+        "accent": [(141, 110, 99), (161, 136, 127)],
+        "glow": (141, 110, 99),
+    },
+    "Aquarela Suave": {
+        "bg": [(10, 25, 41), (26, 47, 69)],
+        "accent": [(93, 173, 226), (174, 214, 241)],
+        "glow": (93, 173, 226),
     },
 }
 
@@ -58,55 +68,103 @@ def _get_palette(theme: str) -> dict:
 
 
 # ---------------------------------------------------------------
-# Tentativa 1: Gemini Image Generation (google-genai SDK)
+# Tentativa 1: Nano Banana (gemini-2.5-flash-image-preview)
 # ---------------------------------------------------------------
 def _try_gemini_image(prompt: str, output_path: str, colorful_mode: bool = False) -> bool:
-    """Tenta gerar imagem via Gemini. Retorna True se sucesso."""
+    """Tenta gerar imagem via Gemini Nano Banana (gemini-2.5-flash-image).
+    Usa generate_content com response_modalities=['image'] para native image generation.
+    Implementa backoff exponencial conforme regras Antigravity.
+    Retorna True se sucesso.
+    """
+    import time
+
+    api_key = os.getenv("GEMINI_API_KEY", "")
+    if not api_key:
+        return False
+
     try:
         from google import genai
         from google.genai import types
 
-        api_key = os.getenv("GEMINI_API_KEY", "")
-        if not api_key:
-            return False
-
         client = genai.Client(api_key=api_key)
 
-        response = client.models.generate_images(
-            model="imagen-3.0-generate-001",
-            prompt=prompt,
-            config=types.GenerateImagesConfig(
-                number_of_images=1,
-                aspect_ratio="3:4" if colorful_mode else "16:9",
-                person_generation="allow_adult",
-                output_mime_type="image/jpeg",
-            ),
-        )
+        # Backoff exponencial: 3 tentativas (1s, 2s, 4s)
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = client.models.generate_content(
+                    model="gemini-2.5-flash-image",
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        response_modalities=["IMAGE"],
+                    ),
+                )
 
-        # Extract image from response
-        if response.generated_images:
-            img_bytes = response.generated_images[0].image.image_bytes
-            img = Image.open(BytesIO(img_bytes))
-            
-            # Additional resize block just to match previous constraints locally
-            if colorful_mode:
-                img = img.resize((800, 1200), Image.LANCZOS)
-            else:
-                img = img.resize((800, 450), Image.LANCZOS)
-                
-            img.save(output_path, format="JPEG", quality=92)
-            print(f"[IMG] ✓ Imagen 3.0 gerou imagem: {output_path}")
-                    return True
+                # Extract image from response parts
+                if response.candidates and response.candidates[0].content.parts:
+                    for part in response.candidates[0].content.parts:
+                        if part.inline_data and part.inline_data.mime_type.startswith("image/"):
+                            img_bytes = part.inline_data.data
+                            img = Image.open(BytesIO(img_bytes))
+
+                            # Resize to match ebook constraints
+                            if colorful_mode:
+                                img = img.resize((800, 1200), Image.LANCZOS)
+                            else:
+                                img = img.resize((800, 450), Image.LANCZOS)
+
+                            img.save(output_path, format="JPEG", quality=92)
+                            print(f"[IMG] ✓ Nano Banana gerou imagem: {output_path}")
+                            return True
+
+                print(f"[IMG] Nano Banana: resposta sem imagem (tentativa {attempt+1})")
+                return False
+
+            except Exception as retry_err:
+                err_str = str(retry_err)
+                if "429" in err_str or "quota" in err_str.lower() or "rate" in err_str.lower():
+                    wait = 2 ** attempt  # 1s, 2s, 4s
+                    print(f"[IMG] Rate limit Nano Banana, aguardando {wait}s (tentativa {attempt+1}/{max_retries})...")
+                    time.sleep(wait)
+                    continue
+                else:
+                    print(f"[IMG] Nano Banana erro: {err_str[:120]}")
+                    return False
 
         return False
 
     except Exception as e:
-        print(f"[IMG] Gemini falhou: {str(e)[:100]}, usando fallback Pillow")
+        print(f"[IMG] Nano Banana falhou: {str(e)[:120]}")
         return False
 
 
 # ---------------------------------------------------------------
-# Fallback: Pillow — Arte Geométrica Profissional
+# Fallback 1: Pollinations.ai (Free Text-to-Image AI)
+# ---------------------------------------------------------------
+def _try_pollinations_image(prompt: str, output_path: str, colorful_mode: bool = False) -> bool:
+    """Fallback gratuito que gera imagens por IA caso o Gemini seja barrado por Payload/Billing."""
+    try:
+        import urllib.request
+        from urllib.parse import quote
+        
+        W, H = (800, 1200) if colorful_mode else (800, 450)
+        # Adding seed to bypass cache occasionally, though not strictly required
+        seed = random.randint(1, 999999)
+        url = f"https://image.pollinations.ai/prompt/{quote(prompt)}?width={W}&height={H}&nologo=true&seed={seed}"
+        
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'})
+        with urllib.request.urlopen(req) as response, open(output_path, 'wb') as out_file:
+            out_file.write(response.read())
+            
+        print(f"[IMG] ✓ Pollinations.ai gerou imagem: {output_path}")
+        return True
+    except Exception as e:
+        print(f"[IMG] Pollinations falhou: {str(e)[:100]}, usando fallback geométrico Pillow")
+        return False
+
+
+# ---------------------------------------------------------------
+# Fallback 2: Pillow — Arte Geométrica Profissional
 # ---------------------------------------------------------------
 def _create_pillow_image(
     chapter_title: str,
@@ -241,30 +299,36 @@ def generate_all_images(
         filename = f"chapter_{i + 1}.png"
         output_path = str(Path(assets_dir) / filename)
 
+        # Extract chapter context to inject into prompt for specific details
+        chapter_content_snippet = chapter.get("content", "")[:700].replace("\n", " ").strip()
+        
         # Prompt para Gemini (ilustração profissional)
         if colorful_mode:
             ai_prompt = (
-                f"Vertical portrait wallpaper 9:16 aspect ratio. Create a professional, immersive full-page illustration for a book chapter titled "
-                f"'{chapter['title']}'. Style: {theme}. The image should be an edge-to-edge wallpaper, "
-                f"clean, and suitable to be used as a premium e-book background. No text in the image."
+                f"Vertical portrait wallpaper 9:16 aspect ratio. Create a highly detailed illustration for a book chapter titled "
+                f"'{chapter['title']}'. The visual MUST vividly reflect the characters, hero, and environment described in this excerpt: "
+                f"'{chapter_content_snippet}'. Style: {theme}. The image should be an edge-to-edge wallpaper, "
+                f"immersively capturing the scene. No text in the image."
             )
         else:
             ai_prompt = (
-                f"Create a professional, elegant illustration for a book chapter titled "
-                f"'{chapter['title']}'. Style: {theme}. The image should be atmospheric, "
-                f"clean, and suitable for a premium e-book. No text in the image. "
+                f"Create a highly detailed, elegant illustration for a book chapter titled "
+                f"'{chapter['title']}'. The visual MUST vividly reflect the characters, hero, action, and environment described in this excerpt: "
+                f"'{chapter_content_snippet}'. Style: {theme}. The image should be atmospheric "
+                f"and capture the scene specifically. No text in the image. "
                 f"Wide format (16:9), high quality, editorial illustration style."
             )
 
-        # Tentar Gemini primeiro, depois Pillow
+        # Tentar Gemini -> Pollinations -> Pillow
         if not _try_gemini_image(ai_prompt, output_path, colorful_mode):
-            _create_pillow_image(
-                chapter_title=chapter["title"],
-                chapter_index=i,
-                theme=theme,
-                output_path=output_path,
-                colorful_mode=colorful_mode
-            )
+            if not _try_pollinations_image(ai_prompt, output_path, colorful_mode):
+                _create_pillow_image(
+                    chapter_title=chapter["title"],
+                    chapter_index=i,
+                    theme=theme,
+                    output_path=output_path,
+                    colorful_mode=colorful_mode
+                )
 
         paths.append(output_path)
 
