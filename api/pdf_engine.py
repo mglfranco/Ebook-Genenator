@@ -88,7 +88,7 @@ def compile_pdf(html_content: str, output_path: str, additional_css: str = None)
 
     html_doc = HTML(
         string=html_content,
-        base_url=str(_TEMPLATES_DIR),
+        base_url=str(_PROJECT_ROOT),
     )
     stylesheets = [CSS(filename=str(css_path))]
     
@@ -177,6 +177,162 @@ def generate_pdf(
             --shadow-glow: 0 0 40px rgba(139, 69, 19, 0.12);
             --font-body: Georgia, 'Palatino Linotype', serif;
             --font-display: 'Playfair Display', Georgia, 'Garamond', serif;
+        }""",
+
+        "Executive Dark": """:root {
+            --color-bg: #0d1117;
+            --color-bg-warm: #161b22;
+            --color-bg-cool: #21262d;
+            --color-text: #c9d1d9;
+            --color-text-secondary: #8b949e;
+            --color-text-light: #6e7681;
+            --color-accent: #2f81f7;
+            --color-accent-light: #58a6ff;
+            --color-accent-soft: rgba(47,129,247,0.1);
+            --color-accent-border: rgba(47,129,247,0.4);
+            --gradient-accent: linear-gradient(135deg, #2f81f7 0%, #1f6feb 100%);
+            --gradient-dark: linear-gradient(160deg, #010409 0%, #0d1117 40%, #161b22 70%, #2f81f7 100%);
+            --gradient-warm: linear-gradient(135deg, #161b22 0%, #21262d 100%);
+            --color-cover-card-bg: rgba(1, 4, 9, 0.85);
+            --color-cover-glow-1: rgba(47, 129, 247, 0.15);
+            --color-cover-glow-2: rgba(88, 166, 255, 0.10);
+            --color-cover-pattern-1: rgba(47, 129, 247, 0.05);
+            --color-cover-pattern-2: rgba(88, 166, 255, 0.03);
+            --color-accent-shadow: rgba(47, 129, 247, 0.2);
+            --shadow-card: 0 4px 30px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 50px rgba(47, 129, 247, 0.15);
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            --font-display: 'Inter', -apple-system, sans-serif;
+        }""",
+
+        "Tech Startup": """:root {
+            --color-bg: #ffffff;
+            --color-bg-warm: #f8f9fa;
+            --color-bg-cool: #f1f3f5;
+            --color-text: #212529;
+            --color-text-secondary: #495057;
+            --color-text-light: #868e96;
+            --color-accent: #5c7cfa;
+            --color-accent-light: #748ffc;
+            --color-accent-soft: rgba(92,124,250,0.08);
+            --color-accent-border: rgba(92,124,250,0.2);
+            --gradient-accent: linear-gradient(135deg, #5c7cfa 0%, #845ef7 100%);
+            --gradient-dark: linear-gradient(160deg, #182440 0%, #2b3a67 40%, #4c5ea3 70%, #5c7cfa 100%);
+            --gradient-warm: linear-gradient(135deg, #f8f9fa 0%, #f1f3f5 100%);
+            --color-cover-card-bg: rgba(24, 36, 64, 0.8);
+            --color-cover-glow-1: rgba(92, 124, 250, 0.2);
+            --color-cover-glow-2: rgba(132, 94, 247, 0.15);
+            --color-cover-pattern-1: rgba(92, 124, 250, 0.08);
+            --color-cover-pattern-2: rgba(132, 94, 247, 0.05);
+            --color-accent-shadow: rgba(92, 124, 250, 0.25);
+            --shadow-card: 0 10px 40px rgba(0, 0, 0, 0.08);
+            --shadow-glow: 0 0 60px rgba(92, 124, 250, 0.15);
+            --font-body: 'Open Sans', 'Helvetica Neue', sans-serif;
+            --font-display: 'Poppins', 'Montserrat', sans-serif;
+        }""",
+
+        "Didático Cursos": """:root {
+            --color-bg: #FCFCFD;
+            --color-bg-warm: #F4F5F7;
+            --color-bg-cool: #EBECF0;
+            --color-text: #172B4D;
+            --color-text-secondary: #42526E;
+            --color-text-light: #6B778C;
+            --color-accent: #0052CC;
+            --color-accent-light: #2684FF;
+            --color-accent-soft: rgba(0,82,204,0.05);
+            --color-accent-border: rgba(0,82,204,0.15);
+            --gradient-accent: linear-gradient(135deg, #0052CC 0%, #0065FF 100%);
+            --gradient-dark: linear-gradient(160deg, #091E42 0%, #172B4D 40%, #253858 70%, #0052CC 100%);
+            --gradient-warm: linear-gradient(135deg, #F4F5F7 0%, #EBECF0 100%);
+            --color-cover-card-bg: rgba(9, 30, 66, 0.85);
+            --color-cover-glow-1: rgba(0, 82, 204, 0.15);
+            --color-cover-glow-2: rgba(38, 132, 255, 0.1);
+            --color-cover-pattern-1: rgba(0, 82, 204, 0.06);
+            --color-cover-pattern-2: rgba(38, 132, 255, 0.04);
+            --color-accent-shadow: rgba(0, 82, 204, 0.2);
+            --shadow-card: 0 4px 12px rgba(9, 30, 66, 0.08);
+            --shadow-glow: 0 0 30px rgba(0, 82, 204, 0.1);
+            --font-body: 'Roboto', 'Helvetica Neue', sans-serif;
+            --font-display: 'Roboto Slab', serif;
+        }""",
+
+        "Acadêmico Clean": """:root {
+            --color-bg: #FFFFFF;
+            --color-bg-warm: #FBFBFB;
+            --color-bg-cool: #F5F5F5;
+            --color-text: #222222;
+            --color-text-secondary: #555555;
+            --color-text-light: #888888;
+            --color-accent: #7C2A3B;
+            --color-accent-light: #A4384E;
+            --color-accent-soft: rgba(124,42,59,0.05);
+            --color-accent-border: rgba(124,42,59,0.15);
+            --gradient-accent: linear-gradient(135deg, #7C2A3B 0%, #521C27 100%);
+            --gradient-dark: linear-gradient(160deg, #1C0A0D 0%, #38131A 40%, #521C27 70%, #7C2A3B 100%);
+            --gradient-warm: linear-gradient(135deg, #FBFBFB 0%, #F5F5F5 100%);
+            --color-cover-card-bg: rgba(28, 10, 13, 0.85);
+            --color-cover-glow-1: rgba(124, 42, 59, 0.15);
+            --color-cover-glow-2: rgba(164, 56, 78, 0.1);
+            --color-cover-pattern-1: rgba(124, 42, 59, 0.05);
+            --color-cover-pattern-2: rgba(164, 56, 78, 0.03);
+            --color-accent-shadow: rgba(124, 42, 59, 0.2);
+            --shadow-card: 0 4px 15px rgba(0,0,0,0.05);
+            --shadow-glow: 0 0 30px rgba(124, 42, 59, 0.1);
+            --font-body: 'Times New Roman', 'Lora', serif;
+            --font-display: 'Times New Roman', 'Lora', serif;
+        }""",
+
+        "Agência Digital (Vibrante)": """:root {
+            --color-bg: #ffffff;
+            --color-bg-warm: #fef6fa;
+            --color-bg-cool: #fcf0f5;
+            --color-text: #212529;
+            --color-text-secondary: #495057;
+            --color-text-light: #adb5bd;
+            --color-accent: #f03e3e;
+            --color-accent-light: #ff6b6b;
+            --color-accent-soft: rgba(240,62,62,0.08);
+            --color-accent-border: rgba(240,62,62,0.2);
+            --gradient-accent: linear-gradient(135deg, #f03e3e 0%, #fd7e14 100%);
+            --gradient-dark: linear-gradient(160deg, #340909 0%, #5c1818 40%, #ab2929 70%, #f03e3e 100%);
+            --gradient-warm: linear-gradient(135deg, #fef6fa 0%, #fcf0f5 100%);
+            --color-cover-card-bg: rgba(52, 9, 9, 0.85);
+            --color-cover-glow-1: rgba(240, 62, 62, 0.2);
+            --color-cover-glow-2: rgba(253, 126, 20, 0.15);
+            --color-cover-pattern-1: rgba(240, 62, 62, 0.08);
+            --color-cover-pattern-2: rgba(253, 126, 20, 0.05);
+            --color-accent-shadow: rgba(240, 62, 62, 0.25);
+            --shadow-card: 0 10px 30px rgba(240, 62, 62, 0.15);
+            --shadow-glow: 0 0 50px rgba(240, 62, 62, 0.2);
+            --font-body: 'Montserrat', sans-serif;
+            --font-display: 'Bebas Neue', 'Montserrat', sans-serif;
+        }""",
+
+        "Dark Mode Elegante": """:root {
+            --color-bg: #121212;
+            --color-bg-warm: #181818;
+            --color-bg-cool: #282828;
+            --color-text: #e0e0e0;
+            --color-text-secondary: #a0a0a0;
+            --color-text-light: #606060;
+            --color-accent: #bb86fc;
+            --color-accent-light: #dfb8ff;
+            --color-accent-soft: rgba(187,134,252,0.1);
+            --color-accent-border: rgba(187,134,252,0.3);
+            --gradient-accent: linear-gradient(135deg, #bb86fc 0%, #3700b3 100%);
+            --gradient-dark: linear-gradient(160deg, #000000 0%, #121212 40%, #181818 70%, #bb86fc 100%);
+            --gradient-warm: linear-gradient(135deg, #181818 0%, #282828 100%);
+            --color-cover-card-bg: rgba(0, 0, 0, 0.8);
+            --color-cover-glow-1: rgba(187, 134, 252, 0.15);
+            --color-cover-glow-2: rgba(55, 0, 179, 0.1);
+            --color-cover-pattern-1: rgba(187, 134, 252, 0.06);
+            --color-cover-pattern-2: rgba(55, 0, 179, 0.04);
+            --color-accent-shadow: rgba(187, 134, 252, 0.2);
+            --shadow-card: 0 4px 20px rgba(0,0,0,0.8);
+            --shadow-glow: 0 0 40px rgba(187, 134, 252, 0.15);
+            --font-body: 'Proxima Nova', 'Inter', sans-serif;
+            --font-display: 'Proxima Nova', 'Inter', sans-serif;
         }""",
 
         "Corporativo Clean": """:root {

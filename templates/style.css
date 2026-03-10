@@ -732,6 +732,31 @@ body {
     display: block;
 }
 
+.img-inline-center {
+    display: block !important;
+    max-width: 80% !important;
+    margin: 1.2cm auto !important;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.img-inline-left {
+    float: left;
+    max-width: 45% !important;
+    margin: 0.5cm 1cm 0.5cm 0 !important;
+}
+
+.img-inline-right {
+    float: right;
+    max-width: 45% !important;
+    margin: 0.5cm 0 0.5cm 1cm !important;
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
 /* =========================================================
    ORNAMENT DIVIDER — Premium decorative separator
    ========================================================= */

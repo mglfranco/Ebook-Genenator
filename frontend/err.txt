@@ -1,0 +1,54 @@
+
+> frontend@0.0.0 build
+> tsc -b && vite build
+
+[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m???[39m 3 modules transformed.
+node.exe : [31m???[39m Build failed in 104ms
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~
+    + CategoryInfo          : NotSpecified: ([31m???[39m Build f 
+   ailed in 104ms:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[31merror during build:
+[31m[@tailwindcss/vite:generate:build] Cannot apply unknown 
+utility class `text-gray-100`. Are you using CSS modules or 
+similar and missing `@reference`? https://tailwindcss.com/docs/func
+tions-and-directives#reference-directive[31m
+file: [36mC:/Users/mglsa/OneDrive/??rea de Trabalho/GERADOR DE 
+EBOOKS/frontend/src/index.css[31m
+    at onInvalidCandidate (file:///C:/Users/mglsa/OneDrive/%C3%81re
+a%20de%20Trabalho/GERADOR%20DE%20EBOOKS/frontend/node_modules/tailw
+indcss/dist/chunk-L5IEUH3R.mjs:21:1314)
+    at $e (file:///C:/Users/mglsa/OneDrive/%C3%81rea%20de%20Trabalh
+o/GERADOR%20DE%20EBOOKS/frontend/node_modules/tailwindcss/dist/chun
+k-L5IEUH3R.mjs:16:37066)
+    at file:///C:/Users/mglsa/OneDrive/%C3%81rea%20de%20Trabalho/GE
+RADOR%20DE%20EBOOKS/frontend/node_modules/tailwindcss/dist/chunk-L5
+IEUH3R.mjs:21:355
+    at Ar (file:///C:/Users/mglsa/OneDrive/%C3%81rea%20de%20Trabalh
+o/GERADOR%20DE%20EBOOKS/frontend/node_modules/tailwindcss/dist/chun
+k-L5IEUH3R.mjs:3:1733)
+    at I (file:///C:/Users/mglsa/OneDrive/%C3%81rea%20de%20Trabalho
+/GERADOR%20DE%20EBOOKS/frontend/node_modules/tailwindcss/dist/chunk
+-L5IEUH3R.mjs:3:1377)
+    at Ce (file:///C:/Users/mglsa/OneDrive/%C3%81rea%20de%20Trabalh
+o/GERADOR%20DE%20EBOOKS/frontend/node_modules/tailwindcss/dist/chun
+k-L5IEUH3R.mjs:21:172)
+    at Gi (file:///C:/Users/mglsa/OneDrive/%C3%81rea%20de%20Trabalh
+o/GERADOR%20DE%20EBOOKS/frontend/node_modules/tailwindcss/dist/chun
+k-L5IEUH3R.mjs:38:294)
+    at async ao (file:///C:/Users/mglsa/OneDrive/%C3%81rea%20de%20T
+rabalho/GERADOR%20DE%20EBOOKS/frontend/node_modules/tailwindcss/dis
+t/chunk-L5IEUH3R.mjs:38:631)
+    at async vf (file:///C:/Users/mglsa/OneDrive/%C3%81rea%20de%20T
+rabalho/GERADOR%20DE%20EBOOKS/frontend/node_modules/tailwindcss/dis
+t/chunk-L5IEUH3R.mjs:38:1406)
+    at async uu (file:///C:/Users/mglsa/OneDrive/%C3%81rea%20de%20T
+rabalho/GERADOR%20DE%20EBOOKS/frontend/node_modules/@tailwindcss/no
+de/dist/index.mjs:10:3458)[39m

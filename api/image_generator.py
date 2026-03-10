@@ -145,21 +145,67 @@ def _try_pollinations_image(prompt: str, output_path: str, colorful_mode: bool =
     """Fallback gratuito que gera imagens por IA caso o Gemini seja barrado por Payload/Billing."""
     try:
         import urllib.request
-        from urllib.parse import quote
+        from urllib.parse import quote_plus
         
         W, H = (800, 1200) if colorful_mode else (800, 450)
         # Adding seed to bypass cache occasionally, though not strictly required
         seed = random.randint(1, 999999)
-        url = f"https://image.pollinations.ai/prompt/{quote(prompt)}?width={W}&height={H}&nologo=true&seed={seed}"
+        url = f"https://image.pollinations.ai/prompt/{quote_plus(prompt)}?width={W}&height={H}&nologo=true&seed={seed}"
         
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'})
-        with urllib.request.urlopen(req) as response, open(output_path, 'wb') as out_file:
+        with urllib.request.urlopen(req, timeout=6) as response, open(output_path, 'wb') as out_file:
             out_file.write(response.read())
             
         print(f"[IMG] ✓ Pollinations.ai gerou imagem: {output_path}")
         return True
     except Exception as e:
         print(f"[IMG] Pollinations falhou: {str(e)[:100]}, usando fallback geométrico Pillow")
+        return False
+
+
+# ---------------------------------------------------------------
+# Fallback 1.5: Replicate (Flux.1 / SDXL LoRAs)
+# ---------------------------------------------------------------
+def _try_replicate_image(prompt: str, output_path: str, colorful_mode: bool = False, theme: str = "") -> bool:
+    """Motor Visual Premium via API Replicate (Modelos Open-Source State-of-the-Art)"""
+    replicate_api_token = os.getenv("REPLICATE_API_TOKEN", "")
+    if not replicate_api_token:
+        return False
+        
+    try:
+        import replicate
+        import urllib.request
+        
+        # Flux.1-schnell (Extremamente rápido e altamente responsivo a estilos complexos)
+        model_id = "black-forest-labs/flux-schnell" 
+        print(f"[IMG] Replicate LPU (Flux.1) acionado. Processando renderização para o estilo '{theme}'...")
+        
+        output = replicate.run(
+            model_id,
+            input={
+                "prompt": prompt,
+                "go_fast": True,
+                "num_outputs": 1,
+                "aspect_ratio": "9:16" if colorful_mode else "16:9",
+                "output_format": "jpg",
+                "output_quality": 85
+            }
+        )
+        
+        if output and len(output) > 0:
+            url = output[0]
+            if not isinstance(url, str):
+                 url = str(url) # Parser de obj para str
+            
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req, timeout=20) as response, open(output_path, 'wb') as out_file:
+                out_file.write(response.read())
+            print(f"[IMG] ✓ Replicate LPU gerou a ilustração com sucesso: {output_path}")
+            return True
+            
+        return False
+    except Exception as e:
+        print(f"[IMG] Replicate LPU falhou (Pode estar sem GPU allocada ou key invalida): {str(e)[:100]}")
         return False
 
 
@@ -289,46 +335,94 @@ def generate_all_images(
     chapters: list[dict],
     theme: str,
     assets_dir: str,
-    colorful_mode: bool = False
+    colorful_mode: bool = False,
+    frequency: str = "Em todos os Capítulos"
 ) -> list[str]:
-    """Gera imagens para cada capítulo (Gemini → Pillow fallback)."""
+    """Gera imagens para cada capítulo (Gemini → Pillow fallback). Respeita frequência definida."""
     Path(assets_dir).mkdir(parents=True, exist_ok=True)
     paths = []
 
     for i, chapter in enumerate(chapters):
+        # Validação da Regra de Frequência de Imagens (Reduz chamadas a API)
+        should_generate = True
+        if frequency == "Nenhuma Imagem":
+            should_generate = False
+        elif frequency == "Apenas Capa e Índice" and i > 1:
+            should_generate = False
+        elif frequency == "A cada 2 Capítulos" and i % 2 != 0:
+            should_generate = False
+        elif frequency == "A cada 3 Capítulos" and i % 3 != 0:
+            should_generate = False
+            
+        if not should_generate:
+            paths.append(None)
+            continue
+
         filename = f"chapter_{i + 1}.png"
         output_path = str(Path(assets_dir) / filename)
 
         # Extract chapter context to inject into prompt for specific details
         chapter_content_snippet = chapter.get("content", "")[:700].replace("\n", " ").strip()
         
-        # Prompt para Gemini (ilustração profissional)
-        if colorful_mode:
-            ai_prompt = (
-                f"Vertical portrait wallpaper 9:16 aspect ratio. Create a highly detailed illustration for a book chapter titled "
-                f"'{chapter['title']}'. The visual MUST vividly reflect the characters, hero, and environment described in this excerpt: "
-                f"'{chapter_content_snippet}'. Style: {theme}. The image should be an edge-to-edge wallpaper, "
-                f"immersively capturing the scene. No text in the image."
-            )
-        else:
-            ai_prompt = (
-                f"Create a highly detailed, elegant illustration for a book chapter titled "
-                f"'{chapter['title']}'. The visual MUST vividly reflect the characters, hero, action, and environment described in this excerpt: "
-                f"'{chapter_content_snippet}'. Style: {theme}. The image should be atmospheric "
-                f"and capture the scene specifically. No text in the image. "
-                f"Wide format (16:9), high quality, editorial illustration style."
-            )
-
-        # Tentar Gemini -> Pollinations -> Pillow
-        if not _try_gemini_image(ai_prompt, output_path, colorful_mode):
-            if not _try_pollinations_image(ai_prompt, output_path, colorful_mode):
-                _create_pillow_image(
-                    chapter_title=chapter["title"],
-                    chapter_index=i,
-                    theme=theme,
-                    output_path=output_path,
-                    colorful_mode=colorful_mode
+        # Prompt dinâmico de IA (Ilustração vs Corporativo/Educação)
+        is_corporate = any(kw in theme for kw in ["Wireframes", "Business", "Infográficos", "Gráficos", "Minimalista"])
+        
+        if is_corporate:
+            if colorful_mode:
+                 ai_prompt = (
+                    f"Vertical portrait wallpaper 9:16 aspect ratio. Create a clean, professional, high-end {theme} background "
+                    f"for a business or academic chapter titled '{chapter['title']}'. The visual should be abstract, conceptual, "
+                    f"or a clean diagram loosely inspired by: '{chapter_content_snippet}'. No text in the image. "
+                    f"Corporate, clean presentation style."
                 )
+            else:
+                 ai_prompt = (
+                    f"Create a clean, professional, high-end {theme} specific graphic, chart, or illustration "
+                    f"for a business or academic chapter titled '{chapter['title']}'. Ensure it looks like a premium "
+                    f"editorial asset, loosely inspired by: '{chapter_content_snippet}'. No text in the image. "
+                    f"Corporate, clean presentation style."
+                )
+        else:
+            # IA inteligente para ler cenas: Se tiver dialogo ou lutas e for mangá/ficção:
+            is_action_scene = any(word in chapter_content_snippet.lower() for word in ["espada", "luta", "correu", "tiro", "sangue", "grito"])
+            is_dialog_scene = ("\"" in chapter_content_snippet or "—" in chapter_content_snippet or "disse" in chapter_content_snippet.lower())
+            
+            scene_focus = "focus on the characters, hero, and environment"
+            if is_action_scene:
+                scene_focus = "focus heavily on the high-stakes action scene, combat motion, and dramatic environment"
+            elif is_dialog_scene:
+                scene_focus = "focus on an expressive dialogue scene between characters, showing their emotions and interactions"
+
+            if colorful_mode:
+                ai_prompt = (
+                    f"Vertical portrait wallpaper 9:16 aspect ratio. Create a highly detailed illustration for a book chapter titled "
+                    f"'{chapter['title']}'. The visual MUST vividly {scene_focus} described in this excerpt: "
+                    f"'{chapter_content_snippet}'. Style: {theme}. The image should be an edge-to-edge wallpaper, "
+                    f"immersively capturing the specific scene moment. No text."
+                )
+            else:
+                ai_prompt = (
+                    f"Create a highly detailed, elegant illustration for a book chapter titled "
+                    f"'{chapter['title']}'. The visual MUST vividly {scene_focus} described in this excerpt: "
+                    f"'{chapter_content_snippet}'. Style: {theme}. The image should be atmospheric "
+                    f"and capture the scene specifically. No text in the image. "
+                    f"Wide format (16:9), high quality, editorial illustration style."
+                )
+
+        # Roteador Multi-API (Replicate Flux -> Nano Banana -> Pollinations -> Pillow)
+        # O Replicate (LPU Flux) toma a dianteira na Produção Premium se a API Key for viável.
+        replicate_prompt = ai_prompt + f" Detailed aesthetics: {theme}"
+        
+        if not _try_replicate_image(replicate_prompt, output_path, colorful_mode, theme):
+            if not _try_gemini_image(ai_prompt, output_path, colorful_mode):
+                if not _try_pollinations_image(replicate_prompt, output_path, colorful_mode):
+                    _create_pillow_image(
+                        chapter_title=chapter["title"],
+                        chapter_index=i,
+                        theme=theme,
+                        output_path=output_path,
+                        colorful_mode=colorful_mode
+                    )
 
         paths.append(output_path)
 

@@ -33,12 +33,39 @@ def _configure():
 
 def _gerar_com_retry(prompt: str, max_retries: int = 2) -> str:
     """
-    Tenta gerar conteúdo com fallback entre os 2 melhores modelos. Rate-limit wait reduzido drasticamente.
+    Tenta gerar conteúdo de forma Híbrida. 
+    Prioridade 1: GroqCloud (Llama 3 70B LPU) - Foco em extrema velocidade e zero throttling.
+    Prioridade 2: Google Gemini (Fallback)
     """
-    _configure()
+    groq_api_key = os.getenv("GROQ_API_KEY", "")
+    
+    # 1. Tentar Groq (Llama 3)
+    if groq_api_key:
+        try:
+            from groq import Groq
+            client = Groq(api_key=groq_api_key)
+            print("[Groq LPU] Iniciando Roteirização Engine via Llama-3-70b...")
+            response = client.chat.completions.create(
+                messages=[
+                    {"role": "system", "content": "Você é um escritor profissional e conhecedor excepcional de literatura."},
+                    {"role": "user", "content": prompt}
+                ],
+                model="llama3-70b-8192",
+                temperature=0.7,
+                max_tokens=8000,
+            )
+            content = response.choices[0].message.content
+            if content:
+                print("[Groq LPU] Geração concluída com sucesso em hiper-velocidade.")
+                return content
+        except Exception as e:
+            print(f"[Groq LPU] Erro na geração com Llama 3: {str(e)}. Fazendo Fallback para Gemini...")
 
+    # 2. Fallback para Gemini
+    _configure()
     last_error = None
 
+    print("[Gemini Fallback] Iniciando roteirização via Google Neural Net...")
     for model_name in _MODELS:
         for attempt in range(max_retries):
             try:
@@ -69,7 +96,7 @@ def _gerar_com_retry(prompt: str, max_retries: int = 2) -> str:
                     break  # próximo modelo
 
     raise RuntimeError(
-        f"Todos os modelos Gemini falharam. Último erro: {last_error}"
+        f"Todos os motores falharam (Groq e Gemini). Último erro: {last_error}"
     )
 
 
